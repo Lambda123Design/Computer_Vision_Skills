@@ -111,3 +111,34 @@ cv2.imwrite("./hsv_image.jpg", hsv_image)
 lab_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2LAB)
 
 cv2.imwrite("./lab_image.jpg", lab_image)
+
+**8. Color Thresholding:**
+
+**Converted to RGB to load first** - image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) 
+
+**Converted to HSV to use for Color Thresholding** - image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+**Targeting the Giraffe Outline**
+
+**Targeting the brightness** 
+
+lower_white = np.array([0,0,190])
+
+upper_white = np.array([30,80,255]) **It is not pure white it has some kind of Brown Orangish; 0 to 60 in Terms of Original HSV; Here it is scaled; 80 because saturation is not too gray; It has some level of brown as well**
+
+**Mask Plotting ** - mask = cv2.inRange(image_hsv, lower_white, upper_white) [Not Black and white because we are using Matplotlib and it uses for a single channel, that purple and yellow] **With OpenCV we can get Black and White**
+
+**Colour Thresholding:**
+
+black_hsv = np.uint8([[[120, 255, 0]]]) - **Hue is 120, Saturation is 255, Brightness is 0; When 0 only we will get black**
+
+black_bgr = cv2.cvtColor(black_hsv, cv2.COLOR_HSV2BGR)[0][0] **Converting to BGR because OpenCV considers BGR in default**
+
+**[0][0] - Added because we want only 120,255,0**
+
+image_result = image.copy()
+
+image_result[mask>0] = black_bgr **[If Mask>0, Colour Thresholding is true and we want to change it**
+
+**Converting the final Image to RGB** - image_result_rgb = cv2.cvtColor(image_result, cv2.COLOR_BGR2RGB)
+
