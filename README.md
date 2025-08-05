@@ -142,3 +142,5 @@ image_result[mask>0] = black_bgr **[If Mask>0, Colour Thresholding is true and w
 
 **Converting the final Image to RGB** - image_result_rgb = cv2.cvtColor(image_result, cv2.COLOR_BGR2RGB)
 
+**9. Image Resizing, Scaling and **
+
