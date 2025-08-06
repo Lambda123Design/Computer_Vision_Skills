@@ -1,7 +1,25 @@
 # Computer_Vision_Skills
+
 pip install opencv-python
 
 pip install ipykernel
+
+
+**Table of Contents:**
+
+**A) Reading and Writing Images**
+
+**B) Working with Video Files**
+
+**C) Exploring Colour Space**
+
+**D) Colour Thresholding**
+
+**E) Image Resizing, Scaling and Interpolation**
+
+**F) Flip, Rotate and Crop Images**
+
+### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
 
@@ -26,6 +44,8 @@ cv2.imread("./mountain.jpg") - Returns a NumPy Array; Loads image into Matrix gr
 **image_new = image + 30** - Creating a new NumPy array and add 30 in all of the pixels
 
 **cv2.imwrite("./output.jpg", image_new)**- Path and Name of Image; NumPy array name is image_new
+
+### **B) Working with Video Files**
 
 **4. Load the Video** - video = cv2.VideoCapture("./mountain.mp4") (It will provide a object, to save it, we assign it to "video") (It helps to capture video, frame by frame)
 
@@ -82,6 +102,8 @@ while True:
 
 **It is not a corrupter image; It is how pixels lie after another**
 
+### **C) Exploring Colour Space**
+
 **7. Exploring Color Spaces:**
 
 ### BGR is the color space that OpenCV uses by default
@@ -111,6 +133,8 @@ cv2.imwrite("./hsv_image.jpg", hsv_image)
 lab_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2LAB)
 
 cv2.imwrite("./lab_image.jpg", lab_image)
+
+### **D) Colour Thresholding**
 
 **8. Color Thresholding:**
 
@@ -142,5 +166,96 @@ image_result[mask>0] = black_bgr **[If Mask>0, Colour Thresholding is true and w
 
 **Converting the final Image to RGB** - image_result_rgb = cv2.cvtColor(image_result, cv2.COLOR_BGR2RGB)
 
-**9. Image Resizing, Scaling and **
+### **E) Image Resizing, Scaling and Interpolation**
 
+**9. Image Resizing, Scaling and Interpolation:**
+
+**Converted from BGR to RGB**
+
+**image_rgb.shape - Gives Height, Width, Number of Channels**
+
+**Image Resizing:**
+
+**new_height, new_width = 400, 400**
+
+**1. resized_image = cv2.resize(image_rgb, (new_width, new_height))**
+
+**Neck of the Giraffee looks squeezed**
+
+**Image Scaling:**
+
+**1. Scale to 50%**
+
+scale_percentage = 50
+
+**s_width = int(image_rgb.shape[1] * scale_percentage / 100)** (shape[1] --> Width is at the index 1)
+
+**s_height = int(image_rgb.shape[0] * scale_percentage / 100)** (shape[0] --> Height is at the index 0)
+
+**scaled_image = cv2.resize(image_rgb, (s_width, s_height), interpolation=cv2.INTER_AREA)**
+
+**Scale looks similar; We will see loss in details when upsample/downsample, because the algorithm knows to remove and keep the important ones**
+
+**But when it is time to fill new pixels, it gets confused**
+
+**Generative Algorithms like "GAN are for creating new images using Neural Networks"**
+
+**Interpolation:**
+
+**Did interpolation using different methods such as Nearest, Linear, Cubic, Area, Lanczos4** (Refer Notebook for the code)
+
+**Lanczos4 - Showed Blurry Effect**
+
+**Original, Nearest, Area - Shows similar outputs**
+
+**Linear - Looks Blurry**
+
+**Cubic - Doesn't look much blurry like Linear; Cubic is better than Linear; Lanczos4 is better than Cubic**
+
+But, Original, Linear and Area are of different sizes; Original - 100%; Linear and Area - 600 x 600
+
+### **F) Flip, Rotate and Crop Images:**
+
+**1. Flipping Images:**
+
+**1 - Horizontal Flip**
+
+**0 - Vertical Flip**
+
+**-1 - Flip Both Axes**
+
+flip_horizontal = cv2.flip(image, 1)
+
+flip_vertical = cv2.flip(image, 0)
+
+flip_both = cv2.flip(image, -1)
+
+**2. Printing the Image**
+
+image = cv2.imread("../images/giraffe-Kenya.png")
+
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+**Flipping Images and Converting to RGB ** - images = [image_rgb,cv2.cvtColor(flip_horizontal, cv2.COLOR_BGR2RGB),cv2.cvtColor(flip_vertical, cv2.COLOR_BGR2RGB),cv2.cvtColor(flip_both, cv2.COLOR_BGR2RGB)]
+
+**2. Rotating Images:**
+
+rotate_90_clockwise = cv2.rotate(image_rgb, cv2.ROTATE_90_CLOCKWISE)
+
+rotate_90_counterclockwise = cv2.rotate(image_rgb, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+rotate_180 = cv2.rotate(image_rgb, cv2.ROTATE_180)
+
+images = [image_rgb,rotate_90_clockwise,rotate_90_counterclockwise,rotate_180]
+
+**3. Cropping an Image:**
+
+print(image_rgb.shape) - Gives shape of Image in Height, Width, Channles; type(image_rgb) -> numpy.ndarray
+
+x_start, y_start = 400,300 --> (x1,y1)
+
+x_end, y_end = 800, 900 --> (x2,y2)
+
+cropped_image = image_rgb[y_start:y_end, x_start:x_end]
+
+**In OpenCV, the co-ordinates are not like what we used to see; Co-Ordinates (0,0) starts from Top Left of the Image - Left to Right goes for X-Axis and Top to Bottom goes for Y-Axis**
