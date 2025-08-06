@@ -19,6 +19,8 @@ pip install ipykernel
 
 **F) Flip, Rotate and Crop Images**
 
+**G) Drawing Lines and Shapes using OpenCV**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -259,3 +261,59 @@ x_end, y_end = 800, 900 --> (x2,y2)
 cropped_image = image_rgb[y_start:y_end, x_start:x_end]
 
 **In OpenCV, the co-ordinates are not like what we used to see; Co-Ordinates (0,0) starts from Top Left of the Image - Left to Right goes for X-Axis and Top to Bottom goes for Y-Axis**
+
+**G) Drawing Lines and Shapes using OpenCV:**
+
+**1. We need a empty Canvas to draw lines; So we will create it first**
+
+height, width = 500, 700; blue = (255, 127, 0) **(BGR Blue; Highest Intensity is for Blue and Red has nothing; No Intensity of R)**
+
+canvas = np.full((height, width, 3), blue, dtype=np.uint8) (All the integers that we are going to create on the canvas are going to be integer as always); np.full will fill it
+
+**To print the Canvas** - plt.imshow(cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB))
+
+**Reason for converting to RGB, because Matplotlib expects to be in RGB Image format**
+
+**If we didn't mention the color conversion, It showed a Orange Canvas, because Matplotlib expects in RGB, and we have BGR; So we have to convert it first**
+
+**2. To Draw a Line:**
+
+**cv2.line(canvas, (50, 50), (650, 450), (255, 255, 255), 5)** 
+
+**(50,50) - Starting value for drawing the line; (650,450) - Ending point of the line; (255,255,255) - We want a full white color line; 5 - Thickness of the line**
+
+**3. To Draw a Rectangle:**
+
+**cv2.rectangle(canvas, (100, 100), (300, 300), (0, 255, 255), -1) - (100,100) Starting Co-ordinate; (300,300) - Ending Co-Ordinate; It is a Square; (0, 255, 255) - Colour of Rectangle (Yellow); -1 - To fill the whole thickness**
+
+**4. To Draw a Circle:**
+
+**cv2.circle(canvas, (500, 150), 100, (0, 0, 255), 5) - (500,150) - Centre Point (We need only Centre Point to draw a cirle); 100 - Radius; (0,0,255) - Color; 5 - Thickness **
+
+**5. To Draw an Ellipse:**
+
+**cv2.ellipse(canvas, (350, 350), (100, 50), 45, 0, 360, (0, 255, 0), 3) - (350,350) - Starting Co-Ordinate; (100,50) - Axis of Ellipse (Length of Major and Minor Axis); 45 - Angle of Ellipse; 0 - Starting Angle; 360 - Ending Angle; (45 Degree will be considered in the Starting and ending angle); (0,255,0) - Green Color; 3 - Thickness of Ellipse**
+
+**6. To Draw a Polygon:**
+
+points = np.array([[150, 400], [300, 400], [225, 300]], np.int32)
+
+new_reshaped_point = points.reshape((-1, 1, 2))
+
+print(new_reshaped_point)
+
+cv2.polylines(canvas, [new_reshaped_point], False, (255, 0, 255), 3)
+
+**Polygon has many points (Has many pairs); If we have two pairs of x and y, we can get a rectangle; If we have a single x and y, we can get an ellipse, or a circle; But not with Polygon; It consits of Multiple x and y**
+
+**It can be Xn, Yn; Where n can be greater than 2,3 or 10; If n=2, we will be getting a line; We need more than 2 points to get a polygon**
+
+**We mentioned multiple pairs with help of NumPy**
+
+**[150,400] - First Pair of points; [300,400] - Second pair; [225,300] - Third Pair; np.int32 -On the Image it is not an image and just an Int Value**
+
+**points.reshape((-1, 1, 2)** - These are new reshaped points; (-1,1,2) - In a single row I want two values, -1 means auto; 1,2 - We want one row and two columns in each row of data [We have pair of two-dimensional matrix]
+
+**We will use the Reshaped Matrix to plot the Polygon**
+
+**cv2.polylines(canvas, [new_reshaped_point], False, (255, 0, 255), 3)** - False - IsClosed (We want it to be closed or not) - We don't want it to be closed (we will get three points, but it won't get automatically close by itself, we have to mentioned in that argument to close or not); If True it will select the first and last point and close it (Loops of X and Y will get closed and we get a Triangle); (255,0,255) - Colour of the Polygon; 3 - Thickness of Polygon
