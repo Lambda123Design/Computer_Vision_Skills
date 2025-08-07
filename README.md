@@ -4,6 +4,8 @@ pip install opencv-python
 
 pip install ipykernel
 
+**OpenCV - imread, imshow, waitkey, destroyAllWindows, imwrite, VideoCapture, videoread, cv2.VideoWriter_fourcc**
+
 
 **Table of Contents:**
 
@@ -20,6 +22,8 @@ pip install ipykernel
 **F) Flip, Rotate and Crop Images**
 
 **G) Drawing Lines and Shapes using OpenCV**
+
+**H) Adding Text to Images**
 
 ### **A) Reading and Writing Images:**
 
@@ -317,3 +321,56 @@ cv2.polylines(canvas, [new_reshaped_point], False, (255, 0, 255), 3)
 **We will use the Reshaped Matrix to plot the Polygon**
 
 **cv2.polylines(canvas, [new_reshaped_point], False, (255, 0, 255), 3)** - False - IsClosed (We want it to be closed or not) - We don't want it to be closed (we will get three points, but it won't get automatically close by itself, we have to mentioned in that argument to close or not); If True it will select the first and last point and close it (Loops of X and Y will get closed and we get a Triangle); (255,0,255) - Colour of the Polygon; 3 - Thickness of Polygon
+
+**H) Adding Text to Images:**
+
+**1. For creating Canvas:**
+
+height, width = 500, 700
+
+sky_blue = (255, 127, 0)
+
+**canvas = np.full((height, width, 3), sky_blue, dtype=np.uint8)** - 3 - Need the Height and Width in all 3 channels; datatype - int
+
+**canvas = cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB)** - Need to convert to RGB, or else we get canvas as Orange Color
+
+**2. To add the Text:**
+
+**text = "Hello, OpenCV"** - Text we would like to add
+
+**font = cv2.FONT_HERSHEY_COMPLEX** - Text Font
+
+**org = (200, 100)** - Coordinate for the bottom left corner of the text to start from 
+
+**font_scale = 1.5** - If suppose by default font size is 14, Font scale is 1.5 then, 
+
+**color = (255, 255, 255)** - Colour of Font - White
+
+thickness = 2
+
+**cv2.putText(canvas, text, org, font, font_scale, color, thickness, cv2.LINE_AA)** - cv2.LINE_AA - The type of Line which we want to use (type of line we use for rendering the text)
+
+**3. Trying with Different Fonts:**
+
+fonts = [cv2.FONT_HERSHEY_SIMPLEX,cv2.FONT_HERSHEY_COMPLEX,cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,cv2.FONT_HERSHEY_SCRIPT_COMPLEX,cv2.FONT_HERSHEY_COMPLEX_SMALL]
+
+**Trying different fonts in same x, but making y to differ**
+
+y_offset = 50
+for i, font in enumerate(fonts):
+    text = f"Font {i+1}"
+    cv2.putText(canvas, text, (50,y_offset), font, 1, (0,0, 255), 2, cv2.LINE_AA)
+    y_offset+=50
+
+**(50,y_offset) - We will start from x=50;y=50; 1- Scale; (0,0,255) - Colour (Blue); y_offset+=50 - Every Loop y will change**
+
+**4. Trying with different font size and thickness:**
+
+styles = [(1,2),(2,2),(1,4),(2,4),] (Font Size/Scale, Thickness)
+
+y_offset = 50
+
+for font_scale, thickness in styles:
+    text = f"Font {i+1}"
+    cv2.putText(canvas, text, (50,y_offset), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0, 255), thickness, cv2.LINE_AA)
+    y_offset+=50
