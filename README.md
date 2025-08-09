@@ -25,6 +25,8 @@ pip install ipykernel
 
 **H) Adding Text to Images**
 
+**I) Affine and Perspective Transformation**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -374,3 +376,7 @@ for font_scale, thickness in styles:
     text = f"Font {i+1}"
     cv2.putText(canvas, text, (50,y_offset), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0,0, 255), thickness, cv2.LINE_AA)
     y_offset+=50
+
+**I) Affine and Perspective Transformation**
+
+
