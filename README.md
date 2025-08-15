@@ -27,6 +27,8 @@ pip install ipykernel
 
 **I) Affine and Perspective Transformation**
 
+**J) Image Filters**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -494,3 +496,5 @@ translated_image = cv2.warpAffine(image_rgb, M, (cols, rows))
 **Parallel lines remain parallel in Affine Transformation; But can converge in Perspective; Straight Lines remains same in both of them**
 
 ## Affine we can use for Scaling, Rotation, Shearing, Translation; Perspective we can use to change the view point or to simulate some kind of depth in our image
+
+**J) Image Filters:**
