@@ -379,4 +379,118 @@ for font_scale, thickness in styles:
 
 **I) Affine and Perspective Transformation**
 
+**1. Defining 4 Points to do the Perspective Transformation**
 
+rows, cols, _ = image_rgb.shape
+
+**For Perspective Transformation we need 4 points**
+
+input_points = np.float32([[50, 50], [cols - 50, 50], [50, rows-50], [cols-50, rows-50]])
+
+output_points = np.float32([[10, 100], [cols - 100, 50], [100, rows-10], [cols-50, rows-100]])
+
+**The Input Points to get transformed to the Ouput points after Transformation (We can map any values)**
+
+**Affine Transformation requires a Transformation Matrix, 2x3 Matrix; Perspective Transformation also needs it, concepts remains same, it requires a different matrix**
+
+**It is 3x3 Matrix and not 2x3 Matrix**
+
+**2. Perspective Transformation Components:**
+
+Trasformation matrix for Perspective trasformation
+
+3x3
+
+a, b, c
+
+d, e, f
+
+g, h, 1
+
+a,b,c is responsioble for horizontal scaling, rotation and tranlation
+
+d,e,f is responsioble for vertical scaling, rotation and tranlation
+
+g,h  : Perspective components that account for depth and skew
+
+**Perspective Transformation needs g,h for depth and skewness; Affine Transformation can use 2x3, but Perspective needs some more information**
+
+**3. We can get that Transformation Matrix with help of OpenCV; We have only Input and Output Points**
+
+**M = cv2.getPerspectiveTransform(input_points, output_points)**
+
+**This is the 3x3 Transformation Matrix**
+
+**4. Getting the Perspective Image:**
+
+perspective_image = cv2.warpPerspective(image_rgb, M, (cols, rows))
+
+**Image will be rotated and we won't have any information over there**
+
+**5. Affine Transformation:**
+
+**For Affine Transformation we need only 3 Points**
+
+input_points = np.float32([[50,50], [200, 50], [50, 200]])
+
+output_points = np.float32([[10,100], [200, 50], [100, 250]])
+
+**To get the Transformation Matrix:**
+
+M = cv2.getAffineTransform(input_points, output_points)
+
+**To do Affine Transformation:**
+
+affine_image = cv2.warpAffine(image_rgb, M, (cols, rows))
+
+**It will get rotated and we can also see shearing and body of Girraffe looks weird, stretched (It is like Rotated, Shearing, Translation)**
+
+**6. Rotation using Affine Transformation:**
+
+**Rotation Matrix - 2D**
+
+M = cv2.getRotationMatrix2D(center,angle, scale)
+
+**Then we use the same WrapAffine**
+
+rotated_image = cv2.warpAffine(image_rgb, M, (cols, rows))
+
+**Previously we did base version of Affine Transformation, now we did more rotation**
+
+**7. Shearing using Affine:**
+
+shear_x, shear_y = 0.5, 0 [Shearing for Horizontal, Vertical]
+
+**Custom Transformation Matrix (2x3)**
+
+M = np.float32([[1, shear_x, 0], 
+           [shear_y, 1, 0]])
+
+**We don't use any rotation matrix; Because in shearing we don't have any rotation**
+
+**Shearing using Affine Transformation**
+
+sheared_image = cv2.warpAffine(image_rgb, M, (cols*2, rows))
+
+**We are changing the width; We are passing new width; We are increasing new width; We have taken shear_x and multiplied with rows to increase the column; We will get the whatever column value multiplied by 2**
+
+**8. Translattion using OpenCV:**
+
+tx, ty = 200, 300
+
+**Creating Transformation Matrix**
+
+M = np.float32([[1, 0, tx], 
+           [0, 1, ty]])   (Made Shearing Values zero)
+
+**Creating Translated Image:**
+
+translated_image = cv2.warpAffine(image_rgb, M, (cols, rows))
+
+**In X-Axis, we have shifted 200 Pixels and 300 Pixels in Y-Axis**
+
+**Affine Transformation requires 3 pairs of x,y; Perspective Transformation requires 4 points**
+
+**Parallel lines remain parallel in Affine Transformation; But can converge in Perspective; Straight Lines remains same in both of them**
+
+## Affine we can use for Scaling, Rotation, Shearing, Translation; Perspective we can use to change the view point or to simulate some kind of depth in our image
