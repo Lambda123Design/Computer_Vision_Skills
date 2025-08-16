@@ -29,6 +29,8 @@ pip install ipykernel
 
 **J) Image Filters**
 
+**K) Applying Blur Filters - Average, Gaussian, Median**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -498,3 +500,87 @@ translated_image = cv2.warpAffine(image_rgb, M, (cols, rows))
 ## Affine we can use for Scaling, Rotation, Shearing, Translation; Perspective we can use to change the view point or to simulate some kind of depth in our image
 
 **J) Image Filters:**
+
+**1. We are reading as Grayscale Image; We can also mention as 0,0**
+
+image = cv2.imread("./filter.jpg", cv2.IMREAD_GRAYSCALE)  
+
+plt.imshow(image, cmap='gray') **Cmap should be gray because we have converted it as a Grayscale Image; In the course while he had not mentioned, he got like a Yellow Image**
+
+### We are creating a custom filter
+
+**2. We started passing the Horizontal kernel, but we still had horizontal lines in the images because, the intensity that we are passing might not be that strong; We passed np.array([[-1, -1, -1], 
+                              [0, 0, 0], 
+                              [1, 1, 1]]); Difference wouldn't have been that much, so we had some horizontal lines in the Images**
+
+**More the intensity, better it would be able to extract from**
+
+### We want to extract only Horizontal Lines; Impact is more when we kept 10; We can see Horizontal Lines more clearly and vertical lines are almost gone; Because of the calculation we were able to get some diagnols alone
+
+**3. We transposed and created for Vertical and Diagonal too**
+
+**For horizontal x is in horizontal row**
+
+horizontal_kernel = np.array([[-1, -1, -1], 
+                              [x, x, x], 
+                              [1, 1, 1]])
+
+**For vertical x is in Vertical column**
+
+vertical_kernel = np.array([[-1, x, 1], 
+                            [-1, x, 1], 
+                            [-1, x, 1]])
+
+**For Diagonal x should be in Diagonal; Number above and below x should also follow a diagonal effect**
+
+diagonal_kernel = np.array([[x, -1, -1], 
+                            [1, x, -1], 
+                            [1, 1, x]])
+
+**From visual output itself we can understand which filter it is; Each filter will filter out it's most prominent features**
+
+**We created own custom filters and changed intensities upto us; We can have as -5, -10, -15; Difference between them should be high enough so that they can detect the edges**
+
+**We learnt about how to extract features like Horizontal, Vertical and Diagonal Separately**
+
+**K) Applying Blur Filters - Average, Gaussian, Median**
+
+**1. Average Blur:**
+
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+### The requirement for any kernel is OpenCV is we need to pass as Grayscale
+
+kernel_s = 10
+
+avergae_blur = cv2.blur(image_grey, (kernel_s, kernel_s))
+
+**Higher the kernel size, more the bluriness effect**
+
+plt.imshow(avergae_blur, cmap='grey') **Need to mention cmap=grey too**
+
+**2. Gaussian Blur:**
+
+kernel_s = 31 **This requires an odd number to work; In that video he got an error**
+
+**Thir argument that takes below is SigmaX, it is the Standard Deviation of the Gaussian in the X Direction; Higher the Sigma X, better the smoothing effect**
+
+guassian_blur = cv2.GaussianBlur(image_grey, (kernel_s, kernel_s), 0)
+
+plt.imshow(guassian_blur, cmap='grey')
+
+**3. Median Blur**
+
+median_blur = cv2.medianBlur(image_grey, 11) **Need only one kernel value**
+
+**3 is the kernel size; Stronger noise reduction may distort final results; Bigger the value, stronger blur we will get**
+
+plt.imshow(guassian_blur, cmap='grey')
+
+**We the compared all the three blurs with original image**
+
+**Original Grayscale image looks ver sharp; Average Blur looks average; Gaussian Blur does lot of blur; Median blur changes the image itself, it is better when we want to reduce the noise with help of median blur because in a particular kernel it picks median of it and when we try to pick median of it, lower the possible or the higher intensityor the lowest intensity might be lost, because of how median works**
+
+**We can go with average or median blurring; Or with Gaussian blurring when we want to smoothen; In terms of noise we should go with Median Blurring**
