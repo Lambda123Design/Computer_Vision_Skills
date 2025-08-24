@@ -31,6 +31,8 @@ pip install ipykernel
 
 **K) Applying Blur Filters - Average, Gaussian, Median**
 
+**L) Edge Detection Using Sobel, Canny & Laplacian**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -584,3 +586,49 @@ plt.imshow(guassian_blur, cmap='grey')
 **Original Grayscale image looks ver sharp; Average Blur looks average; Gaussian Blur does lot of blur; Median blur changes the image itself, it is better when we want to reduce the noise with help of median blur because in a particular kernel it picks median of it and when we try to pick median of it, lower the possible or the higher intensityor the lowest intensity might be lost, because of how median works**
 
 **We can go with average or median blurring; Or with Gaussian blurring when we want to smoothen; In terms of noise we should go with Median Blurring**
+
+**L) Edge Detection Using Sobel, Canny & Laplacian**
+
+1. Reading the Image - image = cv2.imread("../images/giraffe-Kenya.png", cv2.IMREAD_GRAYSCALE)
+
+2. **Sobel Edge Detector**
+
+sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3) **Output depth of images; 1 is derivative in x direction, 0 is derivative in y direction; We need to calculate the sobel in x direction. So that's why we have kept x as one y as zero.We don't want to calculate in both direction; k is kernel size and we kept as 3**
+
+sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3) **Similarly we created for y direction too**
+
+### 3. Once we have the derivative in both the direction, we need to calculate the magnitude.
+
+sobel_combined = cv2.magnitude(sobel_x, sobel_y)
+
+**This is how we do edge detection** 
+
+3. **Laplacian Edge Detection:**
+
+We have to mention for Laplacian it will be pretty straightforward; Next is Output Depth; Next is Kernel Size; It already calculates the derivative with the help of single matrix.
+
+laplacian = cv2.Laplacian(image, cv2.CV_64F, ksize=3)
+
+**We also need to do one more operation in Laplacian because since the edges are just changes in intensity, the sign positive and negative does not matter, but in Laplacian you will get points in negative direction as well as higher positive positive direction, but we only want in positive direction. So what we will do, we will make the absolute value of that okay. We will make the absolute. Because when once you plot Laplacian in its natural state, it will look a little weird.**
+
+laplacian_abs = cv2.convertScaleAbs(laplacian)
+
+**We want to do the abs the absolute of that for this Laplacian matrix. So we have two versions of Laplacian one with absolute, one without absolute.This one is having negative as well as positive values.**
+
+**4. Canny Edge Detection:**
+
+For canny there is also one more thing which we have mentioned.We need to mention the threshold one and two, which was mentioned in the last step of canny.So we need to mention first the higher threshold. It starts with lower and upper.So we need to mention the lower.
+
+canny_edges = cv2.Canny(image, 180, 200)
+
+**5. Next we plotted all the Images**
+
+titles = ['Original', 'Sobel', 'Laplacian_all', 'Laplacian_abs', 'Canny']; image_list = [image, sobel_combined, laplacian, laplacian_abs,  canny_edges]
+
+**This is Sobel Laplacian all looks all gray.But if we do the absolute of all because this has negative values as well as positive.So this might break our matplotlib, but when we do the Laplacian absolute it is able to perform better. So this might break our matplotlib, but when we do the Laplacian absolute it is able to perform better. We next increased fig size as 20x16**
+
+**We are able to see lot of noise in Laplacian because we have converted those negative values to positives.And that might create lot of noise as we can see here.
+So we can find out lot of different methods, like if you want to normalize the negative values or if you want to make it zero or something like that. But this also does the job. And this is what a canny object detection looks like. Canny edge detection looks like.You can see this is canny.So we can save this image.**
+
+The best one we got is I think that is canny because the edges here are defined.But but there is no noise here because canny takes care of all the noise components.
+But in Laplacian we have a lot of noise.In Sobel.Also we have noise.But Sobel.Considering the computation cost of Sobel, it is also given a very good features.
