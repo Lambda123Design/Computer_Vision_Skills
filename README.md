@@ -33,6 +33,8 @@ pip install ipykernel
 
 **L) Edge Detection Using Sobel, Canny & Laplacian**
 
+**M) Calculating and Plotting Histogram**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -632,3 +634,104 @@ So we can find out lot of different methods, like if you want to normalize the n
 
 The best one we got is I think that is canny because the edges here are defined.But but there is no noise here because canny takes care of all the noise components.
 But in Laplacian we have a lot of noise.In Sobel.Also we have noise.But Sobel.Considering the computation cost of Sobel, it is also given a very good features.
+
+**M) Calculating and Plotting Histogram**
+
+1. We are going to convert this to RGB here.So image underscore RGB because we want to plot a histogram of our RGB image. We will use cv2 dot CVT color and I'm going to pass the image. Then we will mention.From which color space we want to convert.We want to convert from BGR to RGB.And this will be our RGB image.
+
+2. The next thing we have to do is to get histogram.We need to plot all the channels separately.So we have to first split our channel.So we are going to use cv2 dot split to split our channels.That is cv2 dot split.We want to split my RGB image.So it will be split into three sections.We are going to store into channels.
+This is channel has total number of three different dimensions. And we're going to use it one by one. And the colors I am going to represent here as blue.Green and then red.And then for channel comma color in zip of channels comma color.So it will zip it and it will iterate.It will give me one value one by one.But if your if our image is RGB we need to have red first.It will have red first, Then we will have blue.Later this will be red.Channel will come first with the red color here.So channel color will come in single value.This should be channel colors.It is color.And let me mention here colors.
+
+channels = cv2.split(image_rgb)
+colors = ['red', 'green', 'blue']
+
+3. We are going to plot histogram. We are going to get histogram values.We will calculate the histogram with calc hist.This is the function which we have to mention.
+And here we have to pass the channel.So our channel is going to be coming here.So first channel will come red.And then we need to pass some values.We need to pass values like mask.So this will be zero.So it's an optional one.And then we have to pass.Total number of channels.Total number of images okay.So this will be our image because we are passing one by one right.So we have to pass the first channel the first R.So we are passing R here.Second thing we are going to pass is channels.List of channels which we want to use.We want to use only channel zero for grayscale because we are going to consider this as a grayscalebecause it is only one channel, whereas we are plotting histogram for r g b.So R is a single channel.So we want to use zero here because we are going to treat it as grayscale image.The next thing we are going to do is we have to mention none for mask.It is an optional one.It is used to calculate the histogram for a specific region.So we are going to use none.It means we are going to calculate histogram for the entire image.And the next argument is going to be histogram size.Our histogram size is going to be 256.Why?Because the pixel intensity values ranges from 0 to 256.And we want to see those intensity values.Next thing is range.The range of our histogram is going to be starting from 0 to 256.This is the range.And once this is done we have to store this histogram I will store this histogram into high SD and thenI will use plt dot plot.Here plt dot plot.And then I have to mention this histogram and then color I will mention in color.So it means when I get a histogram it will be plotted with a red color.The red means we are plotting for red channel.And we are getting this color here because we have mentioned already the color here, right?I will mention color here and that's all. So once this is done I want to show the plot.
+So I will mention the title PLT dot title. I am mentioning it as color histogram and then plt dot x label as pixel intensity. In x we have pixel intensity.In y axis we have total number of those pixels.It is a frequency intensity of those pixels.I will mention plt dot y label and then it should be frequency.
+This is frequency.And then I will mention plt dot show to show the plot.
+
+for channel, color in zip(channels, colors):
+    hist = cv2.calcHist([channel], [0], None, [256], [0, 256])
+    plt.plot(hist, color=color)
+
+plt.title("Color Histogram")
+plt.xlabel("Pixel Intensity")
+plt.ylabel("Frequence")
+plt.show()
+
+**Observations from Image:**
+
+Starting with the blue channel, we can see that there are a lot of blue pixels present. Most of these blues fall in the lighter shades, as indicated by the high spike in the histogram. The highest spike for blue appears in the intensity range of 230 to 250, which corresponds to brighter hues of blue. This tells us that a large number of pixels in the image have high blue intensity values. Additionally, there are also lower-intensity blues present, which means darker shades of blue are also being used in the image.
+
+Moving to the green channel, we notice that green is the second most dominant color. While we don’t see a strong presence of pure green, it mostly appears in combination with the other RGB components. The histogram shows a spike for green in the range of 170 to 200, indicating that these intensity values are frequently occurring in the image.
+
+For the red channel, we can observe that red is present but to a lesser extent compared to blue and green. The intensity of red is not very high, generally falling in the range of 100 to 150, which corresponds to darker shades of red. These reds can be seen in areas like the horse, the giraffe’s patterns, and the grass.
+
+Overall, this is the RGB analysis of the image. 
+
+### However, if we want to understand more about the brightness and overall value of the image, we need to move beyond RGB and look at the HSV (Hue, Saturation, Value) representation, where the “Value” component specifically represents brightness.
+
+4. **HSV Codes:**
+
+image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV); 
+h, s, v = cv2.split(image_hsv)
+
+h_hist = cv2.calcHist([h], [0], None, [180], [0, 180])
+
+s_hist = cv2.calcHist([s], [0], None, [256], [0, 256])
+
+v_hist = cv2.calcHist([v], [0], None, [256], [0, 256])
+
+**Code Explanations:**
+
+Now, instead of converting the image from BGR to RGB, we are going to convert it from BGR to HSV. This will give us the HSV version of the image.
+
+The next step is to split this HSV image into its three separate channels: H (Hue), S (Saturation), and V (Value). Once we have these channels, we will calculate the histogram for each one separately. Unlike the RGB case, we are not going to use the red, green, and blue colors for plotting. Instead, we will assign specific colors for each histogram: orange for Hue, green for Saturation, and blue for Value.
+
+For histogram calculation, the function cv2.calcHist() is the same, but the ranges differ.
+
+For Hue (H):
+
+The histogram requires 180 bins, since Hue in OpenCV is represented in the range 0 to 180 degrees.
+
+Hue essentially corresponds to the type of color (e.g., red, green, blue, etc.), so its range is smaller.
+
+For Saturation (S) and Value (V):
+
+Both use 256 bins with a range of 0 to 256, just like pixel intensity values in RGB.
+
+Saturation represents the intensity or purity of the color.
+
+Value represents the brightness of the image.
+
+Once we compute these histograms, we plot them using subplots: a single row with three columns. The figure size is set to 15 × 5, so all three histograms appear side by side. Each histogram is drawn on its corresponding subplot:
+
+Hue histogram (plotted in orange, labeled “Hue Histogram”)
+
+Saturation histogram (plotted in green, labeled “Saturation Histogram”)
+
+Value histogram (plotted in blue, labeled “Value Histogram”)
+
+The axes are labeled properly:
+
+The x-axis represents Bins (intensity or range values).
+
+The y-axis represents Frequency (number of pixels for each bin).
+
+Finally, we use plt.tight_layout() to adjust the spacing and plt.show() to display the three histograms together.
+
+This way, instead of analyzing only the RGB color intensities, we can now also understand the image in terms of Hue (color type), Saturation (color strength), and Value (brightness), which often gives a clearer understanding of the overall image properties.
+
+**Observations:**
+
+So, we are able to see this separately for the Hue histogram. In this, we can see that my hue range is showing a spike in the degree from 0 to 225. This indicates the presence of some kind of yellow and red color. We need to check on the color wheel to understand what this 100-degree hue represents, but we have observed that a lot of colors are coming from this 100-degree hue value.
+
+If I talk about Saturation, which represents the saturation of that particular color, we can see that a lot of saturation is in the range of around 100. So, a saturation of around 100 is being used a lot in this picture — in this giraffe picture. We can also see many spikes in the range of 70 or 80 up to around 200. This means that the saturation values are concentrated in this range. They are not using saturation values like 0, 20, 30, 40, or around 250, but rather values within this specific middle range.
+
+Now, if I talk about the Value channel, we can conclude that the image is not dark. Many of the pixels in our image are not dark. In the Value histogram, we see a spike starting from 100, and a lot of values lie in the range of around 220 to 240.
+
+This provides important information about our image: the values are not evenly distributed, and the intensities are not spread out completely. The color saturation that is being used is not too bright and not too dark, but it still leans slightly toward the darker range. If the Value were consistently around 200 or 250, we would see higher saturation. But here, the bins show that we are not using too many different colors — instead, we are mainly using just two different kinds of colors within the hue wheel of 0 to 180 degrees.
+
+So, this gives us a lot of information. We can directly conclude from this whether our image is dark or not. In this case, our image is not dark, because the majority of the pixel values are in the higher range. As a rule: if the majority of pixel values are greater than 150, the image is considered bright. If the majority of pixel values are smaller than 150, the image is considered dark.
+
+Therefore, we can derive a lot of useful information just from a histogram. Histograms are incredibly versatile, as we can see, and they serve as the foundation of many advanced image processing techniques, such as contrast enhancement and thresholding, which we are going to study in future lectures. In fact, we will later study a technique called CLAHE (Contrast Limited Adaptive Histogram Equalization), which we will explore in more detail in the upcoming sessions.
