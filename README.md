@@ -57,6 +57,8 @@ pip install ipykernel
 
 **H) Matrix Aggregation**
 
+**I) View and Reshape Operation**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -1285,3 +1287,18 @@ To apply this, we first compute the maximum value of the matrix (max_val = matri
 
 Through this lecture, we have covered a wide range of aggregation operations in PyTorch. We started with simple functions such as sum, mean, min, max, and median. Then we learned about aggregation along specific dimensions, followed by cumulative operations like cumulative sum and cumulative product. We then moved to advanced aggregation techniques such as conditional sums and non-zero counts. Finally, we explored normalization using min-max scaling. With these tools, we can efficiently summarize and analyze data stored in matrices or tensors.
 
+**I) View and Reshape Operation**
+
+We begin with torch.arange to create a sequence of values. Suppose we want a total of 12 values starting from 0 to 11, we can generate this sequence and store it into a variable called tensor. Once we have this tensor, we can reshape it using both view as well as reshape. First, we use the view method and specify the new shape. For example, if we want to reshape the tensor into a 2 × 6 matrix, we mention that shape with view. This gives us a reshaped tensor using view. Next, we repeat the same thing with reshape instead of view. When we print both results, we see that there is no visible difference. Both methods rearrange the same data into the desired format. To further confirm, we can print the shape of either one (no need to check both), and we see that the shape has indeed become 2 × 6, exactly what we specified.
+
+Before moving further, it is important to check whether a tensor is contiguous. PyTorch provides a function .is_contiguous() for this purpose. We can use it to determine if the original tensor that we reshaped with view or reshape is contiguous in memory. If the data is not contiguous, using view will throw an error. On the other hand, if the tensor is non-contiguous, reshape will handle it gracefully because it creates a new copy of the data and works with that. This makes reshape more flexible than view.
+
+Now, consider a case where we don’t know one of the dimensions while reshaping. Suppose we have 12 values in total and want PyTorch to calculate one of the dimensions automatically. We can do this using -1 in the shape specification. For instance, we can reshape the tensor to have 3 rows but leave the number of columns unspecified by writing -1. PyTorch will automatically infer the correct number of columns by dividing the total number of elements by 3. Printing the result shows that the shape becomes 3 × 4. This use of -1 is quite practical when we want PyTorch to determine the missing dimension.
+
+This idea becomes very useful in Convolutional Neural Networks (CNNs). After certain operations, CNNs require vector inputs instead of a 2D or 3D matrix. For example, suppose we have an m × n matrix but need a vector of size 1 × (m×n). Here, using -1 helps flatten the matrix into a vector. Let’s take a practical example. If we create 24 values using torch.arange and reshape them into the shape 2 × 3 × 4, we get a 3D tensor. Now, if we want to feed this tensor into a CNN, we might need to flatten it into a 1D vector. We can do this easily by applying view(-1) or reshape(-1). This flattens the tensor, turning the 2 × 3 × 4 shape into a single vector of size 24. Printing it confirms that all values are flattened. We can then check whether this flattened tensor is contiguous by calling .is_contiguous(), which usually returns True.
+
+Next, let’s deliberately create a non-contiguous tensor and see how view and reshape behave. We can start with 24 values reshaped into a 12 × 2 matrix and then transpose it. Transposing makes the tensor non-contiguous. If we check .is_contiguous() on this transposed tensor, it returns False. Now, if we attempt to apply view to reshape this non-contiguous tensor into a shape like 6 × 4, we encounter an error saying that the view size is not compatible with the input tensor size and stride. This shows that view cannot handle non-contiguous data. However, if we instead use reshape, it works perfectly. This is because reshape internally creates a contiguous copy of the tensor and then performs the reshape, so it can handle non-contiguous data as well. Printing the result shows that the tensor has been reshaped into 6 × 4 successfully.
+
+Although reshape handles such cases, operations on contiguous tensors are faster because memory is accessed sequentially. Since view strictly requires contiguous memory, if the tensor is not contiguous we can first call .contiguous() on it. For example, if we take the transposed tensor and apply .contiguous(), it reorganizes the data into a contiguous layout. After this, we can safely use view to reshape it without error. This results in the same outcome as reshape, but now with the efficiency benefits of working on contiguous memory.
+
+Through these examples, we clearly understand the differences between view and reshape. Both can reshape tensors into new dimensions, but view only works with contiguous tensors, whereas reshape is more flexible as it can handle non-contiguous data by making a copy. When performance is critical, it’s better to ensure tensors are contiguous and use view; otherwise, reshape is a safer, more general option.
