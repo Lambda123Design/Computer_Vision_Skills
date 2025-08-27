@@ -55,6 +55,8 @@ pip install ipykernel
 
 **G) Tensor Manipulation**
 
+**H) Matrix Aggregation**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -1215,3 +1217,71 @@ Joining and splitting tensors are very common in mini-batch training, where data
 Permutation and transposition are particularly useful when working with image data or RNNs. For example, in computer vision tasks, PyTorch often uses channel-first tensors shaped like "(batch_size, channels, height, width)", but some libraries or pretrained models might expect "(batch_size, height, width, channels)". In such cases, "x.permute(0, 2, 3, 1)" can be used to reorder the dimensions. For recurrent neural networks, where time-steps may need to be the first dimension, "x.permute(1, 0, 2)" can reorder tensors to match the expected format.
 
 Altogether, tensor manipulation in PyTorch—through reshaping, slicing, joining, splitting, transposing, permuting, cloning, and detaching—forms the backbone of preparing data, building deep learning models, and controlling how computations are carried out efficiently during both training and inference.
+
+**H) Matrix Aggregation**
+
+In this lecture, we will explore matrix aggregation. Aggregation refers to extracting meaningful summaries from matrices or tensors, such as their sum, mean, or maximum values. These operations are essential for understanding data patterns and for reducing dimensions. Let’s get started.
+
+We will begin by creating our input tensor. First, we import torch, and then we create a tensor. For this example, I will create a 2D tensor. Even if I write values such as 1.2, they will be treated as floats by default. I want three rows, each containing three elements, so the tensor will form a 3×3 matrix. The values will be arranged as:
+
+[1, 2, 3
+4, 5, 6
+7, 8, 9]
+
+We will call this tensor matrix. Before performing any operations, let us first print the matrix to verify its contents.
+
+**Basic Matrix Operations:**
+
+print(matrix.sum()); print(matrix.min()); print(matrix.max()); print(matrix.median()); print(matrix.mean())
+
+Now, we start with the most basic aggregation operations. For example, if we want the sum of all values in the matrix, we can simply use matrix.sum(). This will add up every element and print the total, which in our case is 45. Similarly, we can calculate the minimum, maximum, median, and mean values. For instance, matrix.min() will return 1, matrix.max() will return 9, matrix.median() will give 5, and matrix.mean() will also give 5. These are some of the simplest aggregation functions available in PyTorch.
+
+## dim=0 --> rows (column)
+## dim=1 --> column (rows)
+
+print(matrix.max(dim=0))
+print(matrix.sum(dim=0))
+print(matrix.sum(dim=1))
+
+After covering basic aggregation, we move on to aggregation along specific dimensions. Instead of computing over the entire matrix, we may want to compute along rows or columns. In PyTorch, when we specify dim=0, the operation runs across rows (that is, it works column-wise). On the other hand, when we specify dim=1, the operation runs across columns (that is, it works row-wise).
+
+To clarify, when we mention dim=0, the function will consider values across rows for each column index. For example, it will take the first element of row 0, the first element of row 1, and the first element of row 2, and perform the aggregation on them. This is why we say it operates “across rows,” but in practice it processes each column. Similarly, when we specify dim=1, the function takes all values across columns within each row and applies the aggregation.
+
+Let us test this. If we write matrix.sum(dim=0), it will compute the column-wise sums. For example, the first column is 1 + 4 + 7 = 12, the second column is 2 + 5 + 8 = 15, and the third column is 3 + 6 + 9 = 18. The result is [12, 15, 18]. Similarly, if we write matrix.sum(dim=1), it will compute the row-wise sums. For row 0, the result is 1 + 2 + 3 = 6; for row 1, it is 4 + 5 + 6 = 15; and for row 2, it is 7 + 8 + 9 = 24. The result is [6, 15, 24]. The same concept applies for max and min functions as well.
+
+**Cumulative Aggregation** - cumulative_sum = matrix.cumsum(dim=1)
+
+**Cumulative Product** - cumulative_prod = matrix.cumprod(dim=0)
+
+Next, let us look at cumulative aggregation. Cumulative operations keep a running total (or product) as they iterate through values. For example, if we have values [1, 2, 3], the cumulative sum will be: first 1, then 1 + 2 = 3, then 1 + 2 + 3 = 6. This gives us [1, 3, 6]. Similarly, a cumulative product would multiply as we go along: first 1, then 1 × 2 = 2, then 1 × 2 × 3 = 6.
+
+To compute cumulative sum in PyTorch, we use matrix.cumsum(dim=1) if we want to calculate across columns within each row. For the first row [1, 2, 3], the result becomes [1, 3, 6]. For the second row [4, 5, 6], it becomes [4, 9, 15]. For the third row [7, 8, 9], it becomes [7, 15, 24]. Similarly, for cumulative product, we can use matrix.cumprod(dim=0). This will compute down the rows. For example, in the first column [1, 4, 7], the cumulative products will be [1, 4, 28] because 1, then 1×4=4, then 1×4×7=28. This is how cumulative aggregation works.
+
+### Advanced Aggregation - masked_matrix_sum = matrix[matrix>5].sum()
+
+Now, let’s explore advanced aggregation using conditions. Suppose we want to sum only the values in our matrix that are greater than 5. We can create a mask with the condition (matrix > 5), which generates a True/False matrix. Applying this mask to matrix and then summing gives us the sum of all values greater than 5. In our case, those values are [6, 7, 8, 9], and their sum is 30. Similarly, if we specify (matrix > 8).sum(), it will only include the value 9, so the result is 9.
+
+## Non-Zero Values:
+
+matrix = torch.tensor([[1., 2., 3.],
+              [4., 5., 6.],
+              [7., 8., 9.],])
+
+non_zero = matrix.nonzero()
+
+We can also count non-zero values. PyTorch provides matrix.nonzero() for this. It returns the indices of all non-zero elements. To count how many non-zeros are present, we can check its size using matrix.nonzero().size(0). For our original matrix with 9 non-zero elements, the result is 9. If we modify the matrix by replacing three elements with zeros, the result changes to 6, which matches the number of non-zero elements left.
+
+Finally, let us discuss normalization. Normalization is the process of rescaling values so that they lie between 0 and 1. The formula is:
+
+**Normalized Matrix**
+
+max_v = matrix.max()
+
+min_v = matrix.min()
+
+normalized_value = (value – min) / (max – min)
+
+To apply this, we first compute the maximum value of the matrix (max_val = matrix.max()) and the minimum value (min_val = matrix.min()). Then we apply the formula: (matrix – min_val) / (max_val – min_val). This creates a normalized version of the matrix. In our case, since the minimum is 1 and the maximum is 9, the element 1 becomes (1–1)/(9–1) = 0, the element 9 becomes (9–1)/(9–1) = 1, and everything in between is scaled proportionally. Thus, the new matrix ranges from 0 to 1 instead of 1 to 9.
+
+Through this lecture, we have covered a wide range of aggregation operations in PyTorch. We started with simple functions such as sum, mean, min, max, and median. Then we learned about aggregation along specific dimensions, followed by cumulative operations like cumulative sum and cumulative product. We then moved to advanced aggregation techniques such as conditional sums and non-zero counts. Finally, we explored normalization using min-max scaling. With these tools, we can efficiently summarize and analyze data stored in matrices or tensors.
+
