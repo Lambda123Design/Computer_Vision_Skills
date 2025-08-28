@@ -59,6 +59,8 @@ pip install ipykernel
 
 **I) View and Reshape Operation**
 
+**J) Stack Operation**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -1302,3 +1304,27 @@ Next, let’s deliberately create a non-contiguous tensor and see how view and r
 Although reshape handles such cases, operations on contiguous tensors are faster because memory is accessed sequentially. Since view strictly requires contiguous memory, if the tensor is not contiguous we can first call .contiguous() on it. For example, if we take the transposed tensor and apply .contiguous(), it reorganizes the data into a contiguous layout. After this, we can safely use view to reshape it without error. This results in the same outcome as reshape, but now with the efficiency benefits of working on contiguous memory.
 
 Through these examples, we clearly understand the differences between view and reshape. Both can reshape tensors into new dimensions, but view only works with contiguous tensors, whereas reshape is more flexible as it can handle non-contiguous data by making a copy. When performance is critical, it’s better to ensure tensors are contiguous and use view; otherwise, reshape is a safer, more general option.
+
+**J) Stack Operation:**
+
+We will start by importing torch as usual, so we will write "import torch". Next, we will create two tensors as mentioned in the illustration. For this, we use "torch.tensor" and create a simple tensor with the values one, two, and three, which we will name as tensor one. Similarly, we will create another tensor with different values, namely four, five, and six, just to show some difference; otherwise, we won’t be able to distinguish whether we are appending on dimension zero or dimension one. This second tensor will be called tensor two.
+
+Now, we will also print the dimension of the tensor. For this, we write "tensor1.ndim" and also print the shape with "tensor1.shape". Alternatively, we could also use "size" because shape internally uses size. Since tensor one and tensor two are the same in terms of dimension, we only need to print the properties of tensor one. From this, we can see that the tensor is of dimension zero, with a dimension of one and a size of three. This means it has a total of three elements, which gives a shape of one by three.
+
+Next, we will stack the tensors. For this, we use "torch.stack" and mention the tensors we want to stack, i.e., tensor one and tensor two, as arguments. We will specify that we want to stack along dimension zero, and save this into a variable named stacked tensor dimension zero. To verify the result, we will print the shape using "stacked_tensor_dim0.shape" and also print the stacked tensor itself. Then, we will copy and paste this code to create a stacked version along dimension one using the same two tensors, and print the output to see the difference.
+
+When stacking along dimension zero, the shape of the tensor becomes two by three, meaning we have two rows and each row contains three elements. Tensor one (values 1, 2, 3) and tensor two (values 4, 5, 6) are stacked to form a new dimension. Thus, we now have row zero and row one. On the other hand, when stacking along dimension one, it means we are pairing the first index of tensor one with the first index of tensor two, then the second index of tensor one with the second index of tensor two, and so on. This results in a single tensor where one is paired with four, two with five, and three with six. To put all values into a single tensor, they are enclosed within a new dimension. This stacked tensor along dimension one shows values combined column-wise.
+
+We can also stack more than two tensors. For example, if we create another tensor called tensor three with values seven, eight, and nine, and use the same stack function with tensors one, two, and three along dimension zero, we will get a new tensor containing all three. We can label this as new stacked tensor to avoid overwriting the previous variable. Printing it shows the stacked result: 1, 2, 3 from tensor one, 4, 5, 6 from tensor two, and 7, 8, 9 from tensor three, all stacked along a new dimension. The same operation can also be done for dimension one.
+
+Stacking is not limited to vectors (1D tensors); we can also stack 2D tensors. To demonstrate this, we create a 2D tensor, where the first row has two columns and the second row also has two columns. Let’s name it tensor one. Next, we create another 2D tensor, starting with values five and six for the first row, and seven and eight for the second row, naming it tensor two. Using "torch.stack" along dimension zero with these two tensors, we save the result as stacked tensor 2D and print its shape.
+
+The result shows that tensor one (values 1, 2, 3, 4 arranged in a 2D structure) is taken as a single entity, and tensor two (values 5, 6, 7, 8 in 2D) is stacked along a new dimension. This creates a 3D tensor. Printing the dimension before and after stacking reveals that before stacking, the tensor’s dimension was two, but after stacking, we now have three. This is because both 2D tensors are enclosed in another dimension, making the final tensor 3D.
+
+To make this clearer, consider tensor one as [[1, 2], [3, 4]] and tensor two as [[5, 6], [7, 8]]. In this case, dimension zero refers to the outermost structure (rows), dimension one to the inner lists, and stacking along dimension zero means both tensors are combined along this outer level. This results in [[[1, 2], [3, 4]], [[5, 6], [7, 8]]], which is now 3D. The same concept applies to the 1D case, where stacking along dimension zero meant combining full tensors into a new dimension.
+
+We can also stack along dimension one or two. For instance, when stacking along dimension one, the first rows of tensor one and tensor two are combined: (1, 2) with (5, 6), and the second rows are combined as (3, 4) with (7, 8). This produces [[1, 2, 5, 6], [3, 4, 7, 8]]. If we stack along dimension two (the innermost level, the columns), the output pairs elements column-wise: (1, 5), (2, 6), (3, 7), and (4, 8). This is verified by running it in Google Colab. If we attempt stacking along dimension three, it throws an error since the tensor only has up to dimension two, and the error states that the dimension is out of range.
+
+Apart from stack, PyTorch also provides another method for combining tensors, called concatenation (cat). To use it, we write "torch.cat" and pass the tensors we want to concatenate along with the dimension. For example, concatenating tensor one and tensor two along dimension zero results in a 2D tensor where the rows are simply appended: [[1, 2], [3, 4], [5, 6], [7, 8]]. Unlike stack, cat does not create a new dimension; it preserves the number of dimensions. Printing the shape and ndim confirms that the output remains 2D.
+
+If we concatenate along dimension one instead, the columns are appended side-by-side. In this case, the output becomes [[1, 2, 5, 6], [3, 4, 7, 8]]. Thus, concatenation along dimension zero appends rows, while concatenation along dimension one appends columns. The key difference between stack and cat is that stack creates a new dimension to hold the tensors, whereas cat merges them directly while keeping the same dimensionality.
