@@ -8,6 +8,7 @@ pip install ipykernel
 
 ## Different ways to create neural network: Function (Functional API - Flexible, harder to interpret), Sequential (Sequential API - nn.Sequential). There are also different ways to define neural networks in PyTorch. The Functional API is a flexible approach where we directly define operations on tensors, allowing for more customization. The Sequential API is a structured approach where layers are stacked in a linear order using torch.nn.Sequential, making it simpler to define straightforward models.
 
+## We need to convert NumPy Arrays to Tensors in order to do prediction for our Linear Regression Model with Pytorch Components Project
 
 **Table of Contents:**
 
@@ -64,6 +65,8 @@ pip install ipykernel
 **J) Stack Operation**
 
 **K) Understanding Pytorch Neural Network Components**
+
+**L) Creating Linear Regression Model with Pytorch Components**
 
 ### **A) Reading and Writing Images:**
 
@@ -1537,3 +1540,51 @@ On running the above loop, we observe that the loss decreases over epochs. For e
  **Conclusion:**
 
 This demonstrates that the model is able to learn patterns from the input data. The training process consists of forward propagation, loss calculation, backpropagation, and parameter updates. PyTorch handles the underlying details of backpropagation and optimization automatically.
+
+**L) Creating Linear Regression Model with Pytorch Components**
+
+In this lecture, we are going to implement a linear regression model. Instead of using machine learning libraries like scikit-learn or sklearn, we will use PyTorch. To begin, any machine learning problem statement has multiple steps. 
+
+# They are: Data gathering, Data preprocessing, Feature engineering, Model training, Testing
+
+The first step is data gathering, where we collect data from sources such as the web or multiple SQL tables and combine it in a single space. The second step is data preprocessing, which involves changing data types, removing unnecessary columns, and keeping only the relevant ones for analysis. The third step is feature engineering. For example, if we have a column of a person's date of birth, we can derive additional features such as the person's age or the current day of the week. Once we have the relevant features, the fourth step is model training. After the model is trained, we evaluate it on a test set or production data to see how well it performs.
+
+For this lecture, we use a dataset related to medical costs and personal data. The dataset contains columns such as age, sex, BMI, number of children, smoker status, region, and individual medical charges. Age represents the age of the primary beneficiary. Sex indicates the gender of the insurance holder. BMI represents the body mass index. Children represents the number of dependents. Smoker indicates whether the person smokes or not. Region represents the beneficiary’s residency area in the US, including northeast, southeast, southwest, or northwest. Charges represent the individual medical costs billed by the insurance. The dataset has a total of 1,338 rows.
+
+To start, we load the dataset into Google Colab. Instead of downloading it manually from Kaggle, we install Kaggle in Colab using pip install kaggle. We then import Kaggle, specify the dataset to download using kaggle.datasets.download('dataset-name'), store it in a specified path, and print the path using print(path). We can check the dataset directory using import os and os.listdir(path). Once the file insurance.csv is located, we load it into a DataFrame using import pandas as pd and df = pd.read_csv(os.path.join(path, 'insurance.csv')). We inspect the data using df.head() and df.info(). To understand the statistics of numerical columns such as age, BMI, children, and charges, we use df.describe().
+
+Next, we import PyTorch for model training using import torch, import torch.nn as nn, and import torch.optim as optim. We also import functions from sklearn like from sklearn.model_selection import train_test_split for splitting the data, LabelEncoder for encoding categorical variables, and StandardScaler for feature scaling. We split the dataset into training and test sets using train_df, test_df = train_test_split(df, test_size=0.2, random_state=42).
+
+For encoding categorical variables such as sex, smoker, and region, we initialize a dictionary Labelencoder = {}. For each column, we create a label encoder, fit it on the training set using train_df[col] = L.fit_transform(train_df[col]), and then transform the test set using test_df[col] = L.transform(test_df[col]). The trained label encoders are stored in the dictionary for future use.
+
+To define the features and target, we create X_train by dropping the charges column from the training DataFrame using X_train = train_df.drop(['charges'], axis=1) and y_train as y_train = train_df['charges']. Similarly, for the test set, we define X_test = test_df.drop(['charges'], axis=1) and y_test = test_df['charges'].
+
+Next, we normalize the features to help the model learn faster. We initialize a scaler using scaler = StandardScaler(), normalize the training data with X_train = scaler.fit_transform(X_train), and normalize the test data using X_test = scaler.transform(X_test). 
+
+#### After normalization, we convert all numpy arrays to PyTorch tensors using torch.tensor(X_train, dtype=torch.float32) and torch.tensor(y_train.values, dtype=torch.float32).view(-1,1) for the target, and similarly for X_test and y_test.
+
+# Define Neural Network Model Code:
+
+class SimpleNNRegressionModel(nn.Module):
+  def __init__(self, input_dim):
+    super(SimpleNNRegressionModel, self).__init__()
+    self.network = nn.Sequential(
+        nn.Linear(input_dim, 64),
+        nn.ReLU(),
+        nn.Linear(64, 128),
+        nn.ReLU(),
+        nn.Linear(128, 1)
+    )
+
+  def forward(self, x):
+    return self.network(x)
+
+We then define the neural network model. We create a class class SimpleRegression(nn.Module): which inherits from nn.Module. In the __init__ method, we initialize the neural network with self.network = nn.Sequential(nn.Linear(input_dim, 64), nn.ReLU(), nn.Linear(64,128), nn.ReLU(), nn.Linear(128,1)). The forward method defines def forward(self, x): return self.network(x). The input dimension input_dim is the number of features, which we extract from X_train_tensor.shape[1]. We then initialize the model using model = SimpleRegression(input_dim) and define the loss function as mean squared error using criterion = nn.MSELoss(). The optimizer is Adam with a learning rate of 0.01 using optimizer = optim.Adam(model.parameters(), lr=0.01).
+
+We then create the training loop. We define the number of epochs, for example, epochs = 10000, and iterate over each epoch using for epoch in range(epochs):. We set the model to training mode using model.train(). We clear gradients using optimizer.zero_grad(), compute predictions y_pred = model(X_train_tensor), calculate the loss loss = criterion(y_pred, y_train_tensor), backpropagate using loss.backward(), and update the weights with optimizer.step(). We print training statistics every 100 epochs using if (epoch+1) % 100 == 0: print(f'Epoch {epoch+1}/{epochs}, Loss: {loss.item():.4f}').
+
+Once training is complete, we set the model to evaluation mode using model.eval(), and predict on the test set using y_pred = model(X_test_tensor).detach().numpy(). We calculate evaluation metrics using from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score. RMSE is computed as rmse = mean_squared_error(y_test, y_pred) ** 0.5, MAE as mae = mean_absolute_error(y_test, y_pred), and R2 as r2 = r2_score(y_test, y_pred). These metrics help assess how well the model predicts the charges.
+
+Finally, we define a prediction function def predict_charges(age, sex, bmi, children, smoker, region): which takes the input parameters, constructs a DataFrame with pd.DataFrame, label encodes categorical values using the stored encoders, scales the features with the trained scaler, converts the input to a tensor torch.tensor(input_data, dtype=torch.float32), passes it to the model predicted_charge = model(input_tensor).item(), and returns the predicted insurance charge. We test this function with sample input such as age=19, sex='female', bmi=27.9, children=0, smoker='yes', region='southwest' and print the predicted insurance charge. By adjusting input features like age and smoker status, we can observe changes in the predicted charge.
+
+In summary, we successfully created a linear regression model using PyTorch. We first gathered and loaded the dataset, explored its statistics, split it into train and test sets, encoded categorical variables, scaled the features, and converted them to tensors. We defined a neural network with input, hidden, and output layers, specified the loss function and optimizer, trained the model, evaluated it using RMSE, MAE, and R2 metrics, and finally created a function for predicting insurance charges based on new input data. This end-to-end process demonstrates building a regression model entirely using PyTorch without relying on sklearn for modeling.
