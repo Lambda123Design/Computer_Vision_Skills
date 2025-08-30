@@ -6,6 +6,8 @@ pip install ipykernel
 
 **OpenCV - imread, imshow, waitkey, destroyAllWindows, imwrite, VideoCapture, videoread, cv2.VideoWriter_fourcc**
 
+## Different ways to create neural network: Function (Functional API - Flexible, harder to interpret), Sequential (Sequential API - nn.Sequential). There are also different ways to define neural networks in PyTorch. The Functional API is a flexible approach where we directly define operations on tensors, allowing for more customization. The Sequential API is a structured approach where layers are stacked in a linear order using torch.nn.Sequential, making it simpler to define straightforward models.
+
 
 **Table of Contents:**
 
@@ -60,6 +62,8 @@ pip install ipykernel
 **I) View and Reshape Operation**
 
 **J) Stack Operation**
+
+**K) Understanding Pytorch Neural Network Components**
 
 ### **A) Reading and Writing Images:**
 
@@ -1328,3 +1332,208 @@ We can also stack along dimension one or two. For instance, when stacking along 
 Apart from stack, PyTorch also provides another method for combining tensors, called concatenation (cat). To use it, we write "torch.cat" and pass the tensors we want to concatenate along with the dimension. For example, concatenating tensor one and tensor two along dimension zero results in a 2D tensor where the rows are simply appended: [[1, 2], [3, 4], [5, 6], [7, 8]]. Unlike stack, cat does not create a new dimension; it preserves the number of dimensions. Printing the shape and ndim confirms that the output remains 2D.
 
 If we concatenate along dimension one instead, the columns are appended side-by-side. In this case, the output becomes [[1, 2, 5, 6], [3, 4, 7, 8]]. Thus, concatenation along dimension zero appends rows, while concatenation along dimension one appends columns. The key difference between stack and cat is that stack creates a new dimension to hold the tensors, whereas cat merges them directly while keeping the same dimensionality.
+
+#### **K) Understanding Pytorch Neural Network Components**
+
+In this lecture we will understand PyTorch neural network components. These are building blocks that power deep learning models. Whether you are training a simple classifier or a complex neural network, PyTorch provides additional tools to define, train and optimize models.
+
+So let us understand what are those key components. We will start by writing components of a simple neural network. To get started, we will increase the size and write in a docstring the basic components of a simple neural network. This will be a breakdown of a simple neural network.
+
+## 1. Breakdown of a simple neural network
+
+If we talk about a neural network, it has an input. We denote the input as x. It has weights, denoted as w. The weights can be written as w1, w2, w3, etc. Then we have biases as well, denoted as b. This bias term is added to the linear combination. Next, we have an activation function. We denote the activation function as a. This activation can be sigmoid, ReLU, or any other non-linearity. Finally, we have the output, denoted as y.
+
+To create a forward propagation pass, we start with the input x. The formula for a linear regression is y = mx + c. In neural networks, this can be generalized as y = wx + b, because we have weights w and biases b applied to the input x.
+
+The first step is to compute z = w1·x + b1, which is the linear operation. The output of z then passes through an activation function to introduce non-linearity into the model. So we compute a = activation(z), where the activation could be sigmoid, ReLU, or any other function. The output after activation is denoted as z′ (z dash).
+
+Next, this transformed output is used as input to another node: z2 = w2·z′ + b2. This gives the final output y. Thus, we have two nodes in this simple network: the first node followed by an activation function, and the second node without an activation function, directly producing y.
+
+The components required for this forward propagation are the input x, the weights w, the biases b, the activation function a, and the final output y. This process of computing the output is called forward propagation.
+
+Once forward propagation is complete, we need to compute the loss. The loss is calculated as the difference between the predicted output and the actual target output. After calculating the loss, we need to compute gradients using backpropagation. With backpropagation, gradients of weights and biases are calculated. Finally, an optimizer is required to update the parameters using the computed gradients.
+
+Thus, the key components of a neural network are: inputs, weights and biases, activation functions, forward propagation, loss function, backpropagation, and optimizers.
+
+X --> input; Wx --> Weights; bx --> bias; A --> Activation function; Y ---> Output; Z = W1.X + b1; Z' = A(Z); Y = W2.Z' + b2
+
+# We also use Loss function, Backpropagation and optimizer
+
+## 2. Components of pytorch
+
+Now let us see what components are provided by PyTorch as a library. The first component is the base class for defining custom models, which is torch.nn.Module. This class is always inherited when creating custom models. The second component is the fully connected (or dense) layer, defined using torch.nn.Linear. If we want activation functions, we can use torch.nn.ReLU, torch.nn.Sigmoid, or others. Optimizers for updating weights are available in torch.optim, such as torch.optim.SGD. Loss functions are available in torch.nn, for example torch.nn.CrossEntropyLoss.
+
+For loading data in batches, PyTorch provides torch.utils.data.DataLoader. This class allows loading data efficiently in batches and supports GPU acceleration.
+
+(i) Base class for defining customer models : torch.nn.Module
+  
+(ii) Fully connected (dense) layers : toch.nn.Linear
+  
+(iii) Activation fucntion : torch.nn.ReLU
+  
+(iv) Optimiser : torch.optim
+  
+(v) Loss function : torch.nn.CrossEntropyLoss
+  
+(vi) Loads data in batch : torch.utils.data.DataLoader
+
+## 3. Different ways to create neural network
+
+1. Function : Flexible, harder to interpret
+
+2. Sequential : nn.Sequential
+
+There are also different ways to define neural networks in PyTorch. The Functional API is a flexible approach where we directly define operations on tensors, allowing for more customization (flexible and allows custom operations on tensors, making it suitable for more complex architectures). The Sequential API is a structured approach where layers are stacked in a linear order using torch.nn.Sequential, making it simpler to define straightforward models (more structured, where layers are stacked linearly in order, making it easier for simpler models).
+
+## 4. Finally, when building a PyTorch model, we usually start by importing required components:
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+### Creating Neural Network using Functional API:
+
+Once we have all the imports required, we will start by creating our simple neural network using the Functional API. For the Functional API, we need to create a class, and this will be defined as a model name. Suppose we are creating a model called simple, and this will be our model name. This class needs to inherit nn.Module class. That is the first requirement, as it inherits from nn.Module, which is the base class for all models in PyTorch. Whenever we are creating any custom model, this should be the base class because it has components required to create a neural network.
+
+The second step is that we need to define the __init__ method. We will mention def __init__ and the first argument should be self. This method will initialize model layers. Suppose we are creating a linear network or a simple neural network with only two layers. In the __init__, we can mention a few arguments such as input size, hidden size, and output size. When we initialize our model in Python, we will pass these parameters. The model should have this input size, these many hidden layers (or hidden size), and an output size.
+
+We then have to call the super() function. The first argument to super will be our class name and the second argument is self. We need to call __init__ to initialize the base class. The super function calls the constructor of the parent class, also known as nn.Module. In PyTorch, every custom model inherits from nn.Module, which is the base class. This ensures that the __init__ method of nn.Module is executed before initializing anything else. First, we initialize nn.Module, and then we define our own components.
+
+The first component is self.fc1, which is our first fully connected layer created using nn.Linear. It accepts the input size and the number of output neurons, which in this case is the hidden size. We also define an activation function self.ReLU = nn.ReLU(). Next, we define self.fc2, which will be our second and final fully connected layer using nn.Linear. The input neurons to this will be the hidden size, and the output neurons will be the output size.
+
+So far, we have created the components of our model: input size, hidden size, output size, fully connected layers, and an activation function. To visualize this: suppose our input size is 4. The hidden size is a certain number of neurons, and the output size is, say, 3 neurons. The first fully connected layer fc1 maps from input size to hidden size, and the second fully connected layer fc2 maps from hidden size to output size.
+
+To perform forward propagation, we need to define the forward function. The forward function accepts an input x, which should be a tensor of shape equal to the input size. Inside forward, we first pass x through self.fc1, store the result back in x, apply the ReLU activation function on it, and store it back again in x. Then, we pass it through self.fc2 and again store the result in x. Finally, we return x. This forms the forward propagation pipeline.
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+class Simple(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(Simple, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.ReLU = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, output_size)
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.ReLU(x)
+        x = self.fc2(x)
+        return x
+
+### Creating Neural Network using Sequential API:
+
+Now, if we want to create the same neural network using Sequential API, we can define the model differently. With Sequential API, instead of creating each layer separately, we define the sequence of operations directly. We do not define multiple separate components but rather specify them in one sequence.
+
+class SimpleNNSequential(nn.Module):
+
+  def __init__(self, input_size,hidden_size, output_size):
+    super(SimpleNN, self).__init__()
+    self.network = nn.Sequential(
+        nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, output_size),
+    )
+
+  def forward(self, x):
+    return self.network(x)
+
+In Sequential API, all layers are executed in order, and we cannot change the flow once defined. It is best suited for straightforward architectures where the data flows sequentially from one layer to the next. However, if we need flexibility, such as reusing outputs from previous layers or adding skip connections (as seen in architectures like ResNet), then Sequential cannot handle it. Functional API, on the other hand, provides full flexibility to define custom flows.
+
+## When we learn advanced CNN, we will learn that architecture is not always CNN
+
+## When we move to advanced concepts of Convolutional Neural Networks (CNNs), it becomes clear that architectures are not always purely sequential. Unlike simple feed-forward networks, CNNs often include additional connections where outputs from earlier layers are reused at later stages in the network.
+
+To illustrate this, consider a basic neural network consisting of four hidden layers. The input flows into hidden layer one, its output is passed to hidden layer two, the output of layer two flows into layer three, and so on until hidden layer four produces the final output. In this case, the architecture is strictly sequential. Since each layer passes its output directly to the next one without deviation, a sequential model is sufficient to implement it.
+
+However, in more complex architectures, the flow is not strictly linear. For example, an input may need to be fed directly into an intermediate hidden layer, or the output of one hidden layer might be reused along with the output of another hidden layer. This introduces additional connections that deviate from the standard sequential order. An example of this can be seen in ResNet (Residual Networks), where outputs from previous layers are added to the outputs of deeper layers to enable residual learning.
+
+In such cases, sequential models are no longer flexible enough to handle these additional pathways. With sequential, each layer depends only on the previous one, so reusing intermediate outputs is not possible. On the other hand, functional models provide this flexibility. Each layer is defined separately (e.g., self.fc1, self.fc2, etc.), and their outputs can be stored and reused at any point. This allows operations such as combining outputs from multiple layers, for example, self.fc1 + self.fc2 + self.fc3.
+
+The key difference is that everything possible with sequential can also be implemented using functional, but not everything possible with functional can be replicated in sequential. If the network design is simple and strictly linear, a sequential model is sufficient. For architectures with skip connections, multiple inputs, or reused outputs, the functional API becomes necessary.
+
+Thus, sequential models are best suited for straightforward architectures, while functional models provide the flexibility required for advanced architectures such as ResNet and other modern CNNs.
+
+## To compare: if the architecture is simple and sequential, we can use Sequential API. Otherwise, we should use Functional API. Everything that can be implemented using Sequential can also be implemented using Functional. However, everything that can be done with Functional cannot always be done with Sequential.
+
+### We will now pick the functional network and begin model training. Although this is a dummy network, it accepts an input size, has a hidden size, and produces an output size. We will initialize the network and observe how the training process looks in practice.
+
+**Initializing the Network**
+
+Before creating dummy data, the first step is to initialize the model. Initializing a model means defining its components, such as self.fc1, self.ReLU, and self.fc2. Each layer has arguments such as input size, hidden size, and output size, which must be passed when the model is created.
+
+We create a class called Simple for our model and pass the initial parameters. For this example, the input size is 4, the hidden size is 8, and the output size is 3. This corresponds to the architecture we have seen in the diagram, where the network accepts four input features, passes them through a hidden layer of eight neurons, and produces three output neurons.
+
+model_fun = Simple(input_size=4, hidden_size=8, output_size=3); print(model_fun)
+
+Printing the model displays the layers contained in it. The architecture follows the forward propagation defined in the forward method and shows how the layers are connected.
+
+**Creating Dummy Data:**
+
+Next, we create dummy data for training. The input tensor x will have ten samples, each with four features, corresponding to the input size of the network.
+
+x = torch.rand(10, 4)   # 10 samples, 4 features each
+
+We also define the target labels y. Since we have three output classes, we generate ten random integer labels ranging between 0 and 2.
+
+y = torch.randint(0, 3, (10,))   # 10 random class labels (0, 1, or 2)
+
+Thus, x contains ten rows of input data, and y contains ten corresponding class labels.
+
+**Defining the Loss Function**
+
+We use Cross Entropy Loss as the loss function. In PyTorch, nn.CrossEntropyLoss() automatically combines log softmax and negative log-likelihood loss. This means we do not need to explicitly define a softmax activation function at the output layer. Cross entropy loss inherently applies the softmax operation to the final outputs before computing the loss.
+
+criterion = nn.CrossEntropyLoss()
+
+This loss function is stored in the variable criterion, which is a standard naming convention often seen in PyTorch code repositories.
+
+**Defining the Optimizer**
+
+We now define the optimizer, which updates the weights and biases of the model during training. We use the Adam optimizer with a learning rate of 0.01. All trainable parameters of the model are passed to the optimizer.
+
+optimizer = optim.Adam(model_fun.parameters(), lr=0.01)
+
+**Verifying Input and Labels**
+
+At this stage, we can print x and y to verify that the input tensor contains ten samples and the target tensor contains ten class labels ranging between 0 and 2. The output layer of the model has three neurons, one for each class. Each neuron is responsible for predicting the probability of one of the three classes.
+
+## If a network were required to classify between ten classes, the output layer would need ten neurons. Since our classification problem involves three classes, the output layer has three neurons, with each neuron responsible for predicting one class label.
+
+**Defining the Training Loop**
+
+We now define the training loop. The number of epochs is set to 50, which means the training process will iterate 50 times. For each epoch, the following steps are performed:
+
+(i) Clear gradients using optimizer.zero_grad().
+
+(ii) Forward pass the input x through the model to obtain predictions.
+
+(iii) Compute loss by comparing the predicted output with the actual labels y.
+
+(iv) Backpropagate the loss using loss.backward().
+
+(v) Update parameters using optimizer.step().
+
+(vi) Print loss every 10 epochs to monitor progress.
+
+**Codes for Training:**
+
+epoch = 120
+
+for e in range(epoch):
+  optimizer.zero_grad()
+  outputs = model_func(X)
+  loss = criterion(outputs, Y)
+  loss.backward()
+  optimizer.step()
+
+  if (e+1) % 10 == 0:
+    print(f"Epoch [{e+1}]/50, Loss : {loss.item() :.4f}")
+
+ **Training Results:**
+
+On running the above loop, we observe that the loss decreases over epochs. For example, at epoch 10 the loss is approximately 1.11, at epoch 20 it reduces to 0.93, at epoch 30 it becomes 0.77, and by epoch 50 it drops to around 0.51. Increasing the number of epochs to 120 results in further loss reduction, eventually reaching values close to 0.03 after reinitializing the model and rerunning the training loop.
+
+ **Conclusion:**
+
+This demonstrates that the model is able to learn patterns from the input data. The training process consists of forward propagation, loss calculation, backpropagation, and parameter updates. PyTorch handles the underlying details of backpropagation and optimization automatically.
