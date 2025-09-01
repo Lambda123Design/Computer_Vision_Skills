@@ -72,6 +72,10 @@ pip install ipykernel
 
 **N) Understanding Components of Custom Data Loader in Pytorch**
 
+**O) Defining Custom Image Dataset Loader and Usage**
+
+**P) CNN Training using Custom Dataset**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -1754,3 +1758,273 @@ The key takeaway is: instead of loading all data at once, we created our own dat
 Finally, we can also use the argument num_workers. For example, if we set num_workers=4, PyTorch will create 4 parallel processes to pre-load the next batches while the model is still training on the current one. This reduces waiting time and speeds up training, but also uses more CPU or GPU resources.
 
 By the end of training, after 34 batches per epoch and 1000 epochs, we get the final loss. The key advantages of using custom datasets with DataLoader are: (1) stabilized training with frequent gradient updates, (2) reduced memory usage since we don’t load all data at once, and (3) better generalization through shuffling. This completes our lecture on building a custom dataset and DataLoader in PyTorch.
+
+## **O) Defining Custom Image Dataset Loader and Usage**
+
+In Colab, I have created this dataset using Kaggle. This is the first dataset which I have used that is cat versus dot dataset. I have taken few of the images of cat versus dog dataset, and the second dataset, which I have merged in our cat versus dog is human image dataset. So here we have man and woman. So I have combined man and woman into a new category that is person. Okay. So in total we have three classes that is dog, cat and person. These are the two datasets which I have used.
+
+This dataset is very big. You can see it is 734 MB and this one is also around 730. This is 864 MB. I have combined both, deleted few, cleaned the images and created the final version that is classification dataset underscore v3 dot zip. For the sake purpose of defining our own image dataset loader. So let's import a few libraries. And we are also going to unzip this because this is in zip format.
+
+So first of all we will start by importing some torch libraries. We will mention import torch. I will close this tab once we unzip it. But until then we will write it in this screen.
+
+import torch
+
+
+We also need import OS because we are going to use those libraries.
+
+import os
+
+
+Then from Pil I'm going to import image.
+
+from PIL import Image
+
+
+Then from Torch Vision. Right now we are using Torch Vision. So Torch vision is a library from torch which contains things regarding vision. Okay so here I'm going to import transforms. I will talk about what is transforms.
+
+from torchvision import transforms
+
+
+And then from torch dot utils. From torch dot utils dot data. We are again going to import the same thing that is data loader and data set, data set and data loader.
+
+from torch.utils.data import Dataset, DataLoader
+
+
+And the spelling is wrong. This is torch. And let's import it. So now that we have all the libraries which we require, now it's time to unzip this zip. So the command I'm going to use is this is a Linux command. So I'm going to mention unzip. And then the path of this zip copy path. And that's it. Let's run it so we can see that it is inflating. It means it is extracting the files.
+
+And this name folder, the main folder it is going to create is classification data set underscore v3. Inside it we have Images inside it. We have train and then we have person and then we have person dot jpeg. And this is the same structure I've mentioned in our notebook image dataset v3. If you expand it, you will be able to see images inside images you will see train and test.
+
+I have also mentioned this rename file because I have renamed all the file. You can check it out later. And these are the information data set information. If you double click it, you will be able to see the link of the Kaggle which I have appended here. Okay, the link I have used these data set links I have mentioned in this resource.
+
+So in this train and test we have train. Inside train we have cat, dog and person. Inside test we have cat, dog and person again. And if you click on cat double click you will be able to open image. This is image of cat again image of cat, image of cat. And if you want to check the image of dog you can click on the dog. And this is image of dog right.
+
+Let me close all of these tabs. Now that our data set is available in our Google Colab, I'm going to close this tab and we will focus on the coding part. So now what we will do we will create our image data set data loader okay. First we will start with data set. Then we will use data loader to rap on that data set which we have created for things like batches right. And shuffle.
+
+I'm going to start with class image data set. And the first thing is we have to inherit data set. And then we have to mention the first thing that is in it. There are three components of any data set. Custom data set that is init method. Second is length method and third is get item. First I'm going to mention in self and then I'm going to mention the image directory. Okay. So I'm going to pass train directory and test directory separately. So I'm going to create two kind of data set train and test. For that I'm going to pass image directory.
+
+Second thing is I'm going to store that image directory in self dot image dir. Let me scroll a bit. Yes it looks good. Self dot image dir. I'm going to paste it. Then I'm going to create self dot image path. Image paths. I'm going to store all the image path here. And then all the labels in self dot labels. Because as I mentioned we have to create a structured format at the end image as well as their labels. This is what we have to create.
+
+And also for the prediction when the model has like we have predicted, the model and this labels will be zero, one and two. We will also want to store the class names as well. So what I'm going to create I am going to create a dictionary. Self dot class underscore name and you will understand why I want to create as a dictionary.
+
+So once this df init variables are done I'm going to create I'm going to load the data set. What I'm going to do for label for label comma class dir I'm going to use in enumerate. I'm going to use OS dot list dir. And I'm going to pass image dir. First of all if I pass my train directory path that is train directory path images inside images. If I pass train directory path and if I use OS dot list directory, it will give me cat, dog and person. Okay, so first of all OS dot list directory will give me cat, dog and person.
+
+So in the first iteration, cat will come or dog will come based on the alphabetical order. So cat will come here and the label will be enumerate because it will be enumerate, it will give us zero starting from zero. So any class will be assigned to a label of zero based on the alphabetical order. So this is where we will get that if you want to see that as well I can copy.
+
+And before running this I can create a code. And we will be able to see class directory print label comma class directory and image directory. I will also pass here and I will mention the path to train copy path. And that's it. Now if you run it you will be able to see zero as person one as cat, two as dog. We are here right zero and then person.
+
+Now I want to store this person as zero. Cat as one. Dog as two. So we can mention because right now we are loading it, but we are not saving it. That which index belongs to which class? We are not saving it, we are just using it. Right? If I want to save it, what I will do, I will mention self dot class name the dictionary which we have just created and in the index I will mention label. And for that label I want to store class directory. If I do that the dictionary keys will be zero, one and two and the values will be person, cat and dog which I can utilize it later. Okay, I will talk about it where we are going to utilize that.
+
+And once that is done, once we are in train test and where we are, we have to go inside dog, cat and person. Now what we are going to do, we will mention os.path.join. OS, dot path, dot join and I'm going to mention our image directory. This is our image directory and I will go inside single folder which is our class directory. We will go inside first person. The second iteration we will go inside cat. And the third iteration we will go inside dog. And we will store this path as class path class underscore path.
+
+Now that we have a full path of cat, dog or person on each iteration, now we will go inside each folder and get the file names. So if we go inside person and get the file names, all of those files will be assigned to our ID of zero. So now we have person JPEG and its respective label as zero another person and its respective label as zero. So we will go inside each person folder all the JPEG and assign to a single ID of zero. So once person is done we will go and go to the next iteration. Then we will go to Cat cat folder. We will get all the images and the labels will be same. That is one for all of it. So that's how we are getting that structured format.
+
+Okay, so now what we will do once we have this class path, we will mention for image underscore name we will get image name from OS dot list directory this directory of what path of class path. Then we will get all the images name and what we are going to do. We are going to mention self dot image path which we have just created. Here. We are going to append all the image path and the respective labels in self dot labels. Okay, zero index of image path and zero index of labels means they both belong to the same data. Okay, because we are appending it side by side I am going to mention self dot image path dot append.
+
+But we cannot append image name because this is with respect to your class path. It is not the full path. To get the full path we will mention Os.path.join. Full path is in classpath and with image name. This will give you full path of your image. Okay. And then next thing is we are going to mention self dot labels dot append. This is labels and we are going to append. For all of them it will be having a single label that is zero. For each iteration label will be common images, names will change and the next iteration label name will change and image name will be same. That is for cat all the way.
+
+Okay, so now that we are clear with init method, we are able to create a Destructure method. We have to pass few things like. We have to check the length which our PyTorch expects. We will mention df underscore length and then the first argument it takes is self and I'm going to return length of self dot image path. That is total number of images. I will mention self dot image path. This method is also completed.
+
+Now the next method is get item. So we need to mention PyTorch. How to take exact single data. Given the index. So def underscore get item. This is get item. We don't want all of this. This is the boilerplate code. And instead of index I want to use index. I don't want to use this. I will mention that self dot image path from self dot image path. Get the index and store into image path. That is img underscore path. Do the same for label.
+
+But instead of because we don't want to pass, our model does not expect a path. Our model expects numpy array. Okay, so we cannot pass model because this is. This data set is going to be used by data loader. And data loader is being used by our model. Right. In the batches we cannot pass image path. So we have to pass numpy array. What I'm going to use I'm going to use pillow image dot open. And keep this in mind that your model that is your PyTorch model expects image that is from Pil not from OpenCV.
+
+It is compatible with Pil, but you can come. If you have your OpenCV image, you can convert to Pil very easily. I'm going to mention this image path and we have to convert this to RGB. Okay. Even though it will be originally RGB, but we are going to mention RGB for being safe and then it will return us image. Now we have image which PyTorch expects. That is below, right? And the next thing is we have passed the image. We also need label. What we will do we will mention self dot labels. And in the label we will mention ID because for same index which is trying to access, we have already passed image and we need label for the same exact image and we will get it in the same index because that is how we are storing here, right? And then we will store into label and we will return image and label whenever model is going to call get item internally. Right. So we are going to return. Image underscore label. So how we load the data set how we are going to extract the data set with the help of our custom data set is what is going to be different. But other parts of training and other things will remain same. Okay. But this one will use CNN, which we are going to see in upcoming classes. But for now we are going to see how to load, how to kind of load this unstructured data, this complex data sequentially. Okay. So I think everything is correct here.
+
+And also one more thing that this image will be of different different sizes. If you check this person JPEG it might be a little higher in size then your person two. Person three. Person four. So this is taking a lot of time to load. If you load person three again, based on the internet speed, based on your bandwidth, it might take little time, but I'm going to close it. But it will have different different sizes and different resolution. So we have to kind of make it standardized. Right. But we cannot make a standardized during the model. So we have to make standardize while we are creating the data set creating the batches. So there is a method in PyTorch that is transforms. I'm going to mention transforms. Let me load transforms from Torchvision. We have already imported transforms. We are going to use transforms and this transforms applies multiple transformations on your input. You can mention all different kinds of transformation.
+
+transform = transforms.Compose([
+    transforms.Resize((128, 128)),
+    transforms.ToTensor()
+])
+
+
+We are composing multiple kind of transformations on our image. This is transform. And I'm going to mention transformation like this is transforms okay. This is transforms as is there. The first transformation I want is to resize. I want my pillow image to be resized to suppose 128 cross 128. Lower resolution for faster speed. Just for example. Okay. If you want higher resolution, you can increase this part. Next thing is I want to convert. I want to transform. This transforms dot two tensor as mentioned currently this is in below image when the model will ask. Image when the model will ask for data, it will return us below image. But your model, your PyTorch model is not going to expect image. Below image it is going to expect your tensor. So we will convert it to tensor. And that's it. So we will store this transformation into transform. And where will I use this transform. Let me make it a little bit clean.
+
+So now that we have our transform where will I use it. So I can use this transform on my image whenever my model is asking for data. Right. Whenever my data loader is asking for my data from the data set, then I can change this. So I need to change this here. What can I do here? So for this transform I can ask I can create a new parameter here. That transform is equals to none by default. And when the transform is none, okay, when the transform is none, we will not do anything. If transform is none or you can mention. Okay, let's store this transform in self. It will be accessible across self. Dot transform equals to transform. This will be stored.
+
+Now if we check if self dot transform is available that is if self dot transform then we will mention self dot transform because we will pass this self transform. If it is not none, this will be object self dot transform and we will pass our image here and we will get a new image which will be first resized. Second sequence is it will be converted to tensor okay. So whatever you are going to transform here you can mention there can be lot of transformations like you want to create. You want to add additional noise. You want to change the color format. You can do it here. But right now we only have two transformations. First is resizing. Second is tensors applied to the image. Okay. So now this part is also done. Let's run it. Let's run this part as well.
+
+Now the next thing is we are going to create our data loader. Okay. First thing is we have to mention our image data set. But our image data set expects what it expects. Two things. First is image directory. Second is transformation object. If passed we will pass both of them. But before that we will copy and paste our data set link. Let me check for train. Let me copy path. I will mention train image dir. Train image dir and I will paste it in here. The same thing I will copy paste it here. It will be test image dir. Because we only have two folders and I will store into test. That is train and test. So we usually use train to train. Our model and test is to test how model is performing. Okay. So these are two different sets of data. We don't mix it. Otherwise model will learn all of it. And we don't have any data to test on okay. So this will be separate training set. And test set is to check model performance on unseen data. All of them have the same folder structure but training is used for model training. Test is for evaluation.
+
+train_dataset = ImageDataset(train_image_dir, transform=transform)
+test_dataset = ImageDataset(test_image_dir, transform=transform)
+
+
+Let me copy this whole argument so we will not miss the name and the image data set. I'm first going to pass train image dir. And then in the transform I'm going to pass this transform object which we have created. This will be our image data set. Same thing I'm going to do for test transform will remain same. And then I'm going to create this data set train image data set. So now that we have data set which is capable of asking data from our directory, let me copy this and to have additional functionality on top of it we are going to wrap with the help of data loader. Let me run it. Hopefully we will not see any error. No errors.
+
+Now we are going to mention data loader. The data loader object. The first thing is going to be data set. The data set we have is this is data set. Spelling is wrong. The first data set we are going to pass is train image data set. Second thing we are going to mention is batch size. Batch size we are going to mention 32. And we will also mention shuffle equals to true. And we are going to store this data set in train loader.
+
+from torch.utils.data import DataLoader
+
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+
+
+Okay. Let's mention train loader. Screen image loader. This is train image loader. Same thing we will do for test image loader and we will test it whether our data set loader is working correctly or not. This is going to be test image data set batch size is correct. Data set loader is correct. And that's it. Next thing is we are just going to see whether we are getting images of size 32 in our train data set. Okay. So to do that because all of them all of the data set loader is iterable object.
+
+for images, labels in train_loader:
+    print(images.shape, labels.shape)
+    break
+
+
+What we can do we can mention for images comma labels. Each image will have 32 images in batches. So images comma labels in what in our train image loader. So what we are going to mention I'm just going to mention the shape of it to understand whether the images are coming correctly or not. Images dot shape, then labels dot shape. Let's print it. If we are able to see the first batch we are able to get is of size 32 and image size is three. Cross 128, cross 128. Because we have converted from Pil to torch and this is the dimension now. And if the dimension is coming, it means image was also coming correctly before. Right? And this was 32. It means 32 total number of labels. Again we are having lot of them. We will have lot of batches here because we have lot of images. But now it is able to load all of them, do the random shuffling, do the batches and get us data.
+
+Now that this is done at the last one, you are able to see that we have only ten images because it might not fit all the 32 images because there is none. Image after ten. Okay, ten is the maximum limit on the final batch as well as ten. This looks like our data set is working correctly. To validate it, whether the images are correct or not, we are going to plot the images with the help of data loader only. So we will mention import matplotlib as pyplot as plt, and we are also going to import numpy. NumPy as np. And we will see that. What are the labels actually present. So labels are present in class name okay. Labels are present in class name and class name of what object object of data set. We have data set object in both train as well as test. I'm going to first load train okay train dot class name.
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+print(train_dataset.class_name)
+
+
+So if you print train dot class name you will see what are the labels available. I'm going to mention print print class name or you can do the same for test. If you want to check whether both of them are same or not. You can see zero is zero, index is person one is cat, two is dog for both of train and test. So it means we can rely on this index and labels dictionary. What we are going to do. We are going to use the same code that is for images and labels or images. Comma labels in train image loader that is train image loader. We are looking for train image loader. And we will take only the index one of this image to just show how our plot looks like.
+
+for images, labels in train_loader:
+    print(images.shape, labels.shape)
+    img = images[0].numpy()
+    label = labels[0].item()
+    print("Original shape:", img.shape)
+    print("Label index:", label)
+    print("Label name:", train_dataset.class_name[label])
+    img = np.transpose(img, (1, 2, 0))
+    print("Transposed shape:", img.shape)
+    plt.imshow(img, vmin=0, vmax=1)  # torch ToTensor already scales to [0,1]
+    plt.title(train_dataset.class_name[label])
+    plt.show()
+    break
+
+
+I am going to mention print images dot shape just to check shape labels, dot shape just to check shape. And then I'm going to mention images of zero. So out of this 32 matches, I'm going to first select only the zero and convert to numpy. Because it is in tensor. Your matplotlib cannot accept tensor. So we have to convert to numpy and this will be our image. Next thing is we have to take labels. So I'm going to mention labels of zero. Labels of zero is going to get us labels. And if we check item we don't have to convert to numpy or anything, it will automatically a final scalar value which we can use as a label. It will be integer okay. So this will be our label.
+
+Next thing is we are going to print the label what this label is about. So we have our label in train image data set dot class name. And we have our index in label. I'm going to copy this whole thing which contains this dictionary. And I want to access what I want to access the label, which will give us either person, cat or dog for this particular image. So by plotting it, we will be able to see what this image is and what the label says. If both of them are not matching, it means something is wrong with our data loader. And once this is done, we have to transform our image. Because if we check the format, it is three cross 128 cross 128, which is not correct. We have to shift our image channel. I'm going to mention NP dot transpose. I want to transpose my image and I want to change the index whatever was at zero I want to be one. Whatever was at one, I want to be two. Whatever was at two, I want to be zero. Okay, I'm changing it. It is IMG not image. I'm changing it. And then I'm going to print img. This is img. Now we can also print the shape of it. Print And img dot shape. And this one also let's print it to check what was previously and what is now img dot shape. And we will also print label. To validate each and everything.
+
+And finally with the help of matplotlib plt dot I am show we are going to plot image and this image as converted from tensor to numpy might have different range. So we are going to mention that whenever there is the minimum is going to be zero, and the maximum is going to be 255. Okay. So that it will show the ranges correctly. And then we will break it because we don't want to plot for any other batches for the single batch. For the first batch we are taking the zeroth image. And we don't want this to be iterate and just show the image. Let's run it. We are able to see this person and it is person. The index is zero. The shape originally was three. Cross 128, cross 128 as seen in our data loader. But now because of transpose we are able to see width, height and channel. And this is what our matplotlib accepts, right.
+
+So this looks correct. If we again load it because of shuffle equals to true we will see a different image. Let's see. This is again a person and this is also a person. So this is also correct. Let's do few more times. This is cat right. We are able to see cat. So it should also like mention cat here correct. This is also correct. And let's load for dog. And we are able to see dog here as well. So it means our custom data loader for our complex data structure that is unstructured data set images. It is able to load successfully. So from this now we are equipped with handling unstructured complex data set using PyTorch.
+
+### **P) CNN Training using Custom Dataset**
+
+In this lecture, we focus on designing and training a Convolutional Neural Network (CNN) using a custom dataset. Before moving into architecture design and training, we briefly revisit the data preparation process. A custom dataset is structured in a folder-based hierarchy where each subfolder represents a class containing respective images. Using PyTorch’s Dataset and DataLoader, we ensure images are correctly loaded, transformed, batched, and shuffled for efficient training. Additionally, standard preprocessing steps such as resizing, normalization, and augmentation are applied through torchvision.transforms to make the dataset ready for the CNN.
+
+Next, we recap the role of the DataLoader. It allows us to iterate through the dataset in mini-batches, apply shuffling for randomness, and use multiple workers for parallel loading. This setup is essential for handling large datasets efficiently and ensuring smooth integration with the training pipeline.
+
+We then move on to the CNN design process. A CNN typically consists of a sequence of convolutional layers, each followed by Batch Normalization, a ReLU activation function, and MaxPooling. The convolutional layers extract hierarchical spatial features from the images, batch normalization helps stabilize training, ReLU introduces non-linearity, and max pooling reduces spatial dimensions while retaining key information. After several convolutional blocks, the output is flattened into a vector of neurons, which is then passed through fully connected layers to learn high-level representations. The final layer contains neurons equal to the number of output classes, producing the classification predictions.
+
+One important consideration in CNN design is determining the correct number of neurons when flattening convolutional outputs. Since image dimensions reduce after convolution and pooling operations, we must dynamically calculate the number of features. A practical approach is to pass a dummy input through the convolutional blocks during initialization to automatically determine the flattened dimension before defining the fully connected layers.
+
+Finally, we implement the architecture in PyTorch by creating a custom class that inherits from nn.Module. Inside this class, we define the convolutional layers and fully connected layers, arrange them sequentially, and write the forward pass logic. With this setup, the model can handle varying input sizes while ensuring the final feature map is correctly connected to the output layer.
+
+This systematic process—from dataset preparation, DataLoader recap, and CNN block design to final architecture implementation—ensures a robust foundation for building and training convolutional neural networks on custom image datasets.
+
+Now, we extend our understanding of CNNs by not only building the architecture but also training, evaluating, saving, and deploying it for real-world inference.
+
+(i). Model Initialization and Architecture
+
+We begin by defining a Custom CNN class that inherits from nn.Module. In the __init__ method:
+
+We initialize convolutional blocks using nn.Sequential, where each block consists of Conv2D → BatchNorm → ReLU → MaxPool.
+
+The number of filters increases gradually: 3 → 32 → 64 → 128 → 256.
+
+After the convolutional layers, the output must be flattened before feeding into fully connected (FC) layers.
+
+Since we cannot know the exact flattened feature size beforehand, we dynamically calculate it by passing a dummy input through the conv layers. This initializes the first nn.Linear correctly.
+
+The fully connected layers (FC layers) are then defined:
+
+Flattened features → 512 neurons → 128 neurons → output layer.
+
+The final output has as many neurons as the number of classes (e.g., 3 for cat, dog, person).
+
+Non-linearities (ReLU) are used between layers, with optional dropout for regularization.
+
+(ii). Forward Pass
+
+The forward() method defines the data flow:
+
+Input image → convolutional layers → feature maps.
+
+Feature maps are reshaped with x.view(x.size(0), -1) into flat vectors.
+
+Flattened features → FC layers → final predictions (logits).
+
+(iii). Training Setup
+
+We check device availability (cuda or cpu) and move both model and data to the correct device. Training requires:
+
+Loss function: nn.CrossEntropyLoss() (automatically applies softmax).
+
+Optimizer: torch.optim.Adam(model.parameters(), lr=0.001).
+
+(iv). Training Loop
+
+For each epoch:
+
+Set model to train() mode (ensures batchnorm/dropout behave correctly).
+
+Iterate through batches from the DataLoader.
+
+Move images and labels to device.
+
+Clear gradients with optimizer.zero_grad().
+
+Forward pass → compute loss → backward pass → optimizer step.
+
+Track running loss across batches for monitoring.
+
+(v). Evaluation
+
+After training, we switch to eval() mode and disable gradients with torch.no_grad().
+
+Predictions are obtained with torch.max(outputs, 1).
+
+Accuracy is computed as (correct / total) * 100.
+
+Even after just 2 epochs, the model showed ~74% accuracy, improving further with longer training (e.g., 40 epochs).
+
+(vi). Saving and Loading Models
+
+Trained weights and biases are saved with:
+
+torch.save(model.state_dict(), "cnn_model.pth")
+
+
+To reuse the model later, we must:
+
+Redefine the same CNN architecture class.
+
+Load weights using:
+
+model.load_state_dict(torch.load("cnn_model.pth", map_location=device))
+
+(vii). Inference Class for Real-World Usage
+
+To simplify prediction, we design an ImageClassifier class:
+
+Loads the trained model and class mapping.
+
+Applies the same transformations (resize → tensor → normalize).
+
+Accepts an image path, preprocesses it, and predicts the class.
+
+Uses unsqueeze(0) to simulate batch size of 1.
+
+Maps predicted index (0/1/2) to actual class labels (dog/cat/person).
+
+Optionally overlays the prediction on the image using OpenCV (cv2.putText) and saves the result.
+
+(viii). End-to-End Workflow
+
+Prepare dataset → Dataloader.
+
+Define CNN → conv + FC layers.
+
+Train with optimizer + loss.
+
+Evaluate on test data.
+
+Save trained model.
+
+Deploy with an inference class for single-image predictions.
+
+This end-to-end pipeline equips us to not only train CNNs from scratch but also make them practical for real-world applications where we can classify unseen images directly.
