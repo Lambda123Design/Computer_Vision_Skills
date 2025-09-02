@@ -76,6 +76,22 @@ pip install ipykernel
 
 **P) CNN Training using Custom Dataset**
 
+**Q) Understanding Components of an Application**
+
+**R) What is Deployment**
+
+**S) Tools to Create Interactive Demos**
+
+**T) Hosting Platform**
+
+**U) Setting Up Gradio App in Local Space**
+
+**V) Implementing Gradio App Interface Backend**
+
+**W) Setting HuggingFace Space**
+
+**X) Deploying Gradio App on HuggingFace Spaces**
+
 ### **A) Reading and Writing Images:**
 
 **1. Read the Image - image = cv2.imread("./mountain.jpg")**
@@ -2028,3 +2044,540 @@ Save trained model.
 Deploy with an inference class for single-image predictions.
 
 This end-to-end pipeline equips us to not only train CNNs from scratch but also make them practical for real-world applications where we can classify unseen images directly.
+
+## **Q) Understanding Components of an Application**
+
+Hey everyone and welcome to this exciting project on building an image classification app.
+
+So far we have explored deep learning with PyTorch, built a custom CNN model, and created a custom data loader to handle our own data set. We've also trained our model for X epochs and were able to classify images of cats, people, as well as dogs.
+
+But what's next? The next step is to make this model accessible to everyone. But how can we do that? Instead of running Python functions manually or scripts manually, we will convert our trained model into an interactive web application that allows users to upload an image and receive real time predictions. And we will build this image classification application step by step across multiple lectures, understanding each component in depth.
+
+In this lecture we will understand components of an application. Let's get started. So I will start by writing core components of any ML application. Let me write core components. Of an ML application. ML does not specifically mean linear regression and logistic. It means we will be covering deep learning application as well. Okay, that is what ML application means.
+
+So there are multiple components of any ML application. First is front end. So we have not touched any front end yet. All we are creating was backend or the logic of our model, the logic of our program. So first of all I will create a box of it because they are going to be a lot of components.
+
+This is the first component that is frontend. The front end is responsible for the visible part of your application okay. So whatever you are able to see on the screen, when we create or when we use any application or even a website. So whatever you are able to see on your browser that is called front end, the visible part of your application.
+
+So let me write visible part of application. This is called front end. In this application we are going to create front end to allow users to upload image and see the prediction. And all of this will happen on the front end.
+
+Okay. So here we will mention we will allow users to upload image and see prediction. So here in our front end we have two components which is: we need a method, we need a way so that users can upload image and once the image has been uploaded and the prediction has been made, we have to see the prediction. Whatever the predictions are, we need to again send it back to our front end so that we can see it.
+
+So upload and see are the two components of our front end.
+
+Next component of our ML application is back end. The back end is responsible for logic and processing. So let me write it here. Back end. This is back end. The back end is responsible for logic and processing.
+
+The processing includes two parts: pre-processing and post-processing. So pre-processing is like doing the transformation on the image, getting the image ready so that it can be inputted to the model. And post-processing is when we get labels as output, we get index as output, and we map it back to labels, map it to image, and write the right text into image — all of this comes under post-processing. Okay. So this is what we cover in backend.
+
+So in our ML application we are going to use backend to handle the model, to handle the model loading. We will load our model in backend. We will do the pre-processing as well as handle the inference and all of it we will do in backend.
+
+So our backend can also decide whether we want to run on CPU or GPU based on where we are keeping our application, and we are going to use PyTorch for deep learning inference. This is all going to be present in backend.
+
+Next thing is model. So model is our core component of ML application. This is the third core component of ML application. So let me write model. We are not numbering it but this is model. And we have already created model which can predict dog cat and person. So we are going to use that model. This is a deep learning model.
+
+In our scenario a deep learning model which is trained to classify cat, dog, as well as person. In our case, this is a custom trained CNN model which we have trained using PyTorch.
+
+And then the final component which we are going to have is deployment. The deployment is not the component, but the strategy of where you want your application to run. And this part we handle in deployment. So deployment is a platform — in this part we mention the platform in which we want to deploy our application.
+
+The deployment is where we decide the platform where the application is hosted and made available to users.
+
+There are multiple options for deployment which we can pick. First one is Hugging Face Spaces. So this is free to use, and although free one has some limitations. You can pick the tier one, tier two, and other like paid services which will give you more flexibility.
+
+Second is AWS. You can choose AWS services to deploy your application. You can use Google Cloud Services (GCP). You can use Azure services as well. Also you can use Streamlit Cloud. So Streamlit Cloud also provides free access. This one also has free tier which we are going to use for deployment.
+
+So the one which we are going to use for this ML application deployment, we are going to use Hugging Face Spaces. Okay, Hugging Face Spaces. This is a single term Hugging Face Spaces.
+
+Now let me define how all of this will look like. So in our application we are going to have front end as I mentioned. Now we know all the components which we require. So this is going to be our front end.
+
+And now let's suppose this is back end. In the back end we will have model. We will have inference code which will load the image. This will be pre-processing and this will be model inference. Then this will be post-processing.
+
+So let me mark with a different color. This yellow one will be responsible for whole inference. In the inference we will do first pre-processing, then model inference, then post-processing.
+
+Now let me pick this red and this is our model. I'm going to pick white. And let me write. This is front end. This is our back end. The back end has multiple components. This will be our model. I'm going to write this as pre-processing. This will be our inference, inference to the model and then post processing.
+
+So inference will happen with the help of model. So we are going to have an arrow here. When we call for inference, we will pass our tensor to the model. This will be tensor to the model, and model will return the output back here in the inference part. We are going to have model.
+
+This is data going to the model and model processing the data back which will give us tensor as output in the post processing. What we are going to do: we are going to use torch.argmax or torch.max to get the most probable answer out of those neurons and process it, map to the label. Right.
+
+So this blue part is inference. And this takes part in the pre-processing. It takes input as image. And after this post processing from this whole inference block, I will get something out. This is input. This is output. My input will be an image and output will be either dog or cat or person. This will be my output.
+
+So this is my whole back end. And you can see there is no element of UI present in my back end.
+
+What about front end? In the front end we will be having a drop box — not a drop down, but a section where we can drop images or we can upload images as well. Here we will mention upload image. We will load the image from here. We will load the image from here. This is load image. Or we can say upload image. We will upload the image from here.
+
+And then we will pass the uploaded image to our processing. I will mention it with a different color. So what we are going to do, we are going to use this uploaded image and send it to our back end. So you can see change in color. This is the output from front end which is going to our back end.
+
+And our back end is processing dog, cat, and person which then we will use back in our front end. Okay. And then we need to show this. So what we are going to create — we are going to create a new text box. We are going to create text box as well as we are going to show the image with the text written on it.
+
+Okay. Suppose this is an image of a person. This will be an image of a person which we have inputted. But after this prediction we will also write "person" on the image. And also in the text box we will return "person". And so this is our front end connected to the back end.
+
+So front end is responsible for loading the image where users are allowed to upload an image. And then once we submit, once we click on a button submit, it will send it to backend.
+
+In backend we have multiple processes. In backend we have separate entity of model which we are going to load beforehand and use it in inference. We are going to load image, convert to tensor, do some transformation like resize to like whatever model expects the input dimension to be. We are going to do some pre-processing, and then we are going to pass that pre-processed tensor to inference.
+
+Inference will send the tensor to model, which will then predict multiple classes with the help of torch.argmax or similar. We are going to collect the most probable answer from that particular tensor. We are going to post-process it. We are going to convert index to their labels and then send the output.
+
+Then the output needs to be cached again in the front end. So front end again has two parts which I've already mentioned before. And this is the front end. Users are allowed to upload image and see prediction. Upload is a first part in front end. See prediction is also another part of front end. Both of them will not happen because only after prediction we will see this image. Only after prediction we will see this tag of "person".
+
+So once this process is completed we will upload. We will send this data — that is the "person" text and also the image where we have written "person" on our input image — we are going to send back to our front end.
+
+So this is our whole running application.
+
+Now the issue is where do we want this application to be hosted. We can run this whole application in our local system. But the disadvantage is no one will be able to use it apart from us because it is running in our local system.
+
+So we are going to deploy this application where other people can also use it. So our whole front end and back end, which is an application we are going to wrap with any deployment strategy. Let me select this blue color. So we are going to wrap this whole part which is our whole package — back end as well as front end. We are going to make a package from it. Not a Python package but just the code package.
+
+And then all of this will be present in a single environment. And we are going to use Hugging Face Spaces. Okay. Hugging Face Spaces. This is where we are going to deploy our application.
+
+So just to recap, our core components of an ML applications are front end, back end, model and deployment.
+
+And that's all for this lecture. I'll see you in the next one.
+
+### **R) What is Deployment**
+
+In this lecture we will understand what is deployment?
+
+Let's get started.
+
+So deployment means making an application accessible online so users can interact with it without running your code locally. Let me write it here:
+
+Deployment means making an application accessible via online. We want our application to be accessible online so users can interact with it without running locally.
+
+So what usually happens is that we have a GitHub repo. Suppose we have a GitHub repo where we have a lot of code. Suppose Python code. We have a YAML file configuration file. We have modules. We have multiple modules of our Python. And we have all under GitHub repo okay into a single folder. I will write it as repository or just repo.
+
+And usually suppose this particular repository is creating UI plus your back end — that is your front end plus back end. But the code is written inside GitHub repository. Okay.
+
+So to replicate this, to see how the code is working, first of all any user has to clone it or fork it. Any user has to clone it or fork it, install the requirements, and then run it as well. And then run the application. And once the application is running now it is ready to use.
+
+So whoever wants to use this code, whoever wants to run this application, they have to perform all of this operation: that is clone/fork, then install the requirements, run the application and then the application is now running. But again this application which is running is present locally. So already there is a lot of hassle to run this application and then it will only run locally.
+
+So what you can do — this is user A. So if user A has an instance of your application A1, it is local to that user. And there are a lot of users available worldwide and they want to access your application. They want to run. They want to see how your application is working. They want to access this application. But it will not be possible.
+
+But it will not be possible because the application you are running — suppose you are in a container. This is container and you are running your application locally and the other users are not able to access it.
+
+So what you can do instead of running your application where it is local and not connected to internet, what you will do, you will run this application. This is you. You as a user will run this application in suppose AWS or GCP or Azure or something like Hugging Face Spaces or as well as Streamlit Cloud.
+
+Okay. Now instead of running and setting your application, you are setting your application one time in cloud. Now it will give you a URL. After deploying on any of this cloud it will give you a URL.
+
+For example:
+
+https://myapp/run
+
+
+This is the URL you got.
+
+Now the advantage is once you have this URL, you can share this URL to anywhere in the world to anyone, and then they will be able to access your application because now it is not running locally, it is somewhere on the cloud, and cloud is connected to your internet, and everyone who has access to internet can access your application.
+
+There is no need for all of these users. Now let me mention this is user one, user two, user three, user four, and user n. So all of these users — now there is no need for any of these users to install dependencies, to set up their system or anything. They just need access to browser and this specific link so that their browser can open this application. And with the help of your back end plus front end they can see a full application running okay.
+
+They can upload the image. They can see the predictions.
+
+The steps involved in deployments are:
+
+(i) Develop the model. First of all, we need our AI engine which can predict based on the tensors. It can predict the output.
+
+(ii) Create an interface. And then once the interface is created, an interface is connected to your pre-processing as well as post-processing which we call as back end.
+
+(iii) Host the app online. We are going to have all of this one and two and we will host it online.
+
+And we will see how to host our application online in coming lectures. So we will use Hugging Face Spaces to deploy our application.
+
+**S) Tools to Create Interactive Demos**
+
+In this lecture we will see tools to create interactive demos.
+
+Let's get started.
+
+So I will categorize these tools which will help us create interactive demos into two categories. Let me define interactive tools.
+
+The first category is those which provide UI and also handle back end automatically. So these tools have the ability to create UI automatically as well as attach it to backend. And another kind is which only provides API flexibility. So it will have all the controls over API, but it does not provide any UI. Okay. And when it is an API, we can also control backend, but we don't have UI here. We have to create our own UI.
+
+In terms of this section of interactive tools, the tools that come under UI and backend are Plotly (from Dash), Streamlit, and Gradio. And in the API-only part we have things like Flask and FastAPI. So Flask and FastAPI will give us flexibility to have all the controls over our API. We can create an API to access database, we can create an API to call our model, we can create an API to call a simple function — even a simple “hello world” function as well. So all of the flexibility we have here, but this does not provide a front end.
+
+But if I talk about tools present on the left side (interactive tools), we have Plotly, Dash, Streamlit and Gradio. They allow quick UI creation. It auto-generates interface from simple Python functions. Okay, so what this section allows is quick UI creation. Once we have that UI, we can connect to our back end which can exist in that same file. We don’t have to create a separate back end, though we can do so for more standardized coding. Also, all of this auto-generates interfaces but not from any other language — only from Python functions.
+
+If I talk about the tools on the right side, which are Flask and FastAPI, we can create an API. This is how the diagram will look like, the flow will look like. So we have to create front end. Suppose this is our front end, and we are going to create front end here with the help of HTML, CSS, and if you want JavaScript you can have JavaScript, or we can use more advanced things like React. Then all of them will be connected via our Python backend, which will have two things: one will be our core code of the backend, and another part will be API which will access those core backends.
+
+So if I call an API from the front end, we will be creating it with the help of Flask and FastAPI. For example, API1, API2, API3, API4. From the front end, suppose this is the first text box and we have a submit button. When I type “Hello” in the text box and click on submit, I will mention in my API that it should be active whenever this submit button is clicked. So API1 will work when this particular button is clicked.
+
+Now suppose I have another box for email and password, and I want to do login. This button performs login check. Once I click on login using email and password, we will go to API3 (just as an example). API3 internally is using a function, suppose function A. What it is doing is accepting email and password and checking whether this email and password is correct or not.
+
+When we click on the hello text and submit, API1 is called. Suppose API1 is calling an NLP model which will take this text and try to predict the next word. In this API we will write which function it will call. Suppose it calls function B. All of these functions are Python code. So our API is the endpoint which we are going to use in our front end (HTML, CSS, JavaScript), which is non-Python. Meanwhile, the backend functions are Python.
+
+So now you can see why this right-hand approach is more flexible. But the left side (Plotly, Streamlit, Gradio) ignores all the hassle of creating front end, because it auto-generates the interface from Python functions. On the right, we have to create the front end, write Python functions, and connect which button calls which API. It is more complex but gives more control.
+
+If I were to create a small prototype or demo of a product where I want to see how my model is working and I want other people to use my simple application, I will use the left side (Plotly, Streamlit, Gradio). But if I’m creating a website (e.g., Amazon) with multiple products, databases, and large-scale features, I need more flexibility. In that case I will use HTML, CSS, JavaScript, React for front end, and Python backend (Flask/FastAPI) for APIs. For example, the backend could use a recommendation system in Python that tells Amazon which products to recommend.
+
+So the right side is for more complex scenarios, but for fast prototyping we use Plotly, Streamlit, or Gradio. In this project we are going to use Gradio. The advantages of Gradio are: it allows quick UI creation, auto-generates interfaces, is compatible with text, images, audio, and video, and works seamlessly with Hugging Face Spaces. So we are going to create our application with Gradio and deploy it on Hugging Face Spaces.
+
+Now, let us talk quickly about Plotly Dash. This is the home page of Plotly Dash. In the documentation you can see quickstart, dash fundamentals, callbacks, component libraries, and deployment strategy. Plotly is mostly used for data-intensive apps — if you want to see how your data looks, plot distributions, or visualize graphs, it is very good. But for model inferencing, Streamlit or Gradio are better.
+
+Here’s a minimal Dash example. First install Dash. Then from Dash import dash, html, dcc, callback, etc. Import plotly.express as px and pandas. Read a CSV file into a DataFrame. Create a Dash app object, define layout, add header, dropdown, and graph. Use a callback function to update the graph. Run it with:
+
+python app.py
+
+
+This will start a local server using Flask (Dash uses Flask internally) and serve your app on a local URL. If you want to deploy on the cloud, Plotly provides documentation for production deployments.
+
+Next is Streamlit. On the Streamlit homepage, they show how simply writing st.write produces UI output. You can create sliders with st.slider, upload files with st.file_uploader, create radio buttons with st.radio, charts with st.line_chart, and more. Streamlit has many built-in components like charts, input widgets, media elements, layout, containers, and even elements for chatbots. This makes it powerful because you can focus on modeling instead of UI.
+
+For deployment, Streamlit Cloud makes it very easy. You connect your GitHub repository or sign in with email. Whenever you push changes to GitHub, your Streamlit Cloud app updates automatically.
+
+Now, Gradio. Just like Streamlit, Gradio allows sliders, chat components, file uploads, audio, video, even 3D models. It is simple and integrates very well with Hugging Face Spaces. Many multimodal demos use Gradio. The documentation shows how to create quick apps, and deployment is easy. That’s why we will use Gradio in our project.
+
+Finally, Flask and FastAPI. These don’t provide UI, only APIs. Flask and FastAPI are widely used in companies. If you need custom APIs and want full control, use these. But for quick demos or prototypes, go with Gradio or Streamlit. If you want data-intensive dashboards, use Plotly Dash.
+
+One note: in my experience, Streamlit had some compatibility issues with Torch (temporary, will be fixed soon). Gradio didn’t have such issues. So we will stick with Gradio for building and Hugging Face Spaces for deployment.
+
+This is all the information we need to create interactive applications.
+
+**T) Hosting Platform:**
+
+In this lecture we will learn about hosting platforms, what they are and which hosting platform is suitable for which kind of ML application.
+
+Let's get started.
+
+Let me start by defining the main use case of hosting platforms in our scenario.
+
+Hosting platform – the main use case for hosting platforms is to make our ML model accessible online.
+It is used to make our machine learning models accessible online.
+
+So I will talk about popular ML model hosting options. Let me write:
+
+(i) Platform
+
+(ii) Features
+
+The first platform I will talk about is Streamlit.
+
+If I talk about Streamlit, it is free to use and good for data apps. This is where we can also upload. So this is Streamlit Cloud. We can use applications based on Streamlit to be deployed on Streamlit Cloud. But only applications based on Streamlit.
+
+Next, if I talk about Hugging Face Spaces – this is also free to use, and it is very easy for both applications made from Gradio as well as Streamlit. You can use both here.
+
+Let me draw this table as well. This is our platform. Now it looks much better.
+
+The next one I am going to define is Google Cloud Run.
+
+Google Cloud Run has serverless capabilities and it is scalable. I will talk about serverless and scalable. But the same thing is also available in Amazon Web Services (AWS). They have multiple services for deployment:
+
+(i) SageMaker
+
+(ii) AWS Lambda
+
+(iii) AWS EC2 instance
+
+And I will talk about how we do the deployment and which one to pick based on our ML application.
+
+If I talk about AWS, it is very high performance because it has different components like SageMaker, Lambda as well as EC2. It is high performance but costly. This will also be costly because it is from our cloud provider.
+
+But if I talk about Streamlit Cloud and Hugging Face Spaces, they are free to use. And in between Hugging Face Spaces and Streamlit Cloud, I can see a clear advantage because Hugging Face Spaces is not just dependent on Streamlit – we can have Gradio as well as Streamlit. But in Streamlit Cloud we only have Streamlit applications.
+
+So let me define some color to make our table complete. And that's it.
+
+Now let's talk about which kind of platform can handle which kind of ML application.
+
+I will start with Streamlit / Gradio because both of them are equal here. In terms of Streamlit, we can only mention Streamlit applications. But all of them have a single category – that is, they both are used for Gradio / Streamlit kind of applications, i.e. applications that create UI by their own.
+
+So what kind of applications?
+
+If I talk about Streamlit / Gradio – they are used for machine learning demo apps. We don’t use them in production. We can use them, but only if we don’t have a lot of users. If we have very few users, because it is used for demo and we want a quick deployment.
+
+We just want to check and want our code to be accessible by other people. So this is what we use for ML applications as well as quick deployment.
+
+Okay. We want something which is of low maintenance. And we don’t want to manage our infrastructure. So we don’t want to worry about how much RAM we have, how much GPU we have, Docker, scaling our application with the help of Kubernetes. We don’t want to manage all of those applications. We don’t want to manage the infrastructure which is required for that big application.
+
+So the next thing is – we don’t want to work with cloud platforms. If we don’t want cloud platforms, we will use Streamlit / Gradio in those scenarios.
+
+Now if I talk about AWS SageMaker.
+
+We use AWS SageMaker when we have to do end-to-end ML pipeline support.
+
+End-to-end pipeline support means we need model training support. It means we need to have access to GPU, as well as a place where we can infer from our training code.
+
+So for large scale applications, for production-ready applications, we use AWS SageMaker. This is for demo, not for production. But applications which are ready for production, we use AWS SageMaker.
+
+It has infrastructure like training and pipeline. If you want to create something like an advanced CNN architecture (like ResNet for medical imaging classification), you can use that. If you want to train, fine-tune, and deploy your model with AWS SageMaker, you can do so here.
+
+SageMaker also provides auto-scaling. Auto-scaling means that you are running on a particular box. Suppose this is a box and currently it is using 12 GB of RAM. But later your model wants 14 GB. It can automatically scale and create a bigger box which has 14 GB of RAM. Okay. For real-time inference. Not for training but for inference.
+
+This is just an example to show what we mean by auto-scaling. So it also provides auto-scaling. And none of this is present in Streamlit / Gradio because the use case is different.
+
+Now if I talk about the next one, which is AWS Lambda – which we call as serverless inference.
+
+We use this if we want serverless. It means we want event-driven inference. We will process the image, pass it to the model, and get the output.
+
+When the system is not running we don’t want any cost. That is what we mean by serverless.
+
+So if you want to deploy a small PyTorch model (not a large one), and you don’t want the system to be running always – you can deploy it on AWS Lambda. For example, to classify something like dog or cat or person.
+
+It is very powerful, but it will be called on the go only when we need it. This instance will be running in sleep mode (or energy-efficient mode). But whenever we call for inference, then this system will be active.
+
+That is what serverless inference is. And whenever it is in sleep mode, you won’t get much cost. But whenever the system is invoked, cost will be there.
+
+So the model only runs when a user uploads an image to this particular model, or sends to AWS Lambda.
+
+Also, AWS Lambda automatically scales and shuts down after execution. The main point is:
+
+(i) Automatically scales
+
+(ii) Shuts down after execution
+
+So if you have a specific requirement for this, then you will be using Lambda. If not, you can use AWS SageMaker as well.
+
+Next is AWS EC2 instance.
+
+You might be using this a lot if you don’t have a good system. If you don’t have good hardware, your company might provide you AWS EC2 instance. This is a virtual machine.
+
+This will be an exact machine – suppose you have 12 GB of RAM, 4 cores in your CPU, GPU – just like your physical computer or laptop, but on the cloud.
+
+You will be getting ID and password to login and the SSH URL. You login to this cloud using your terminal. And it will be a full Linux system.
+
+So whatever you are able to do in your local system, you will be able to do in EC2 instance as well. It is basically just a powered version of your local system, but running on cloud.
+
+So you will use AWS EC2 instance when you want to have full control over your ML training and inference.
+
+You don’t want AWS Lambda. You don’t want it to automatically shut down. You don’t want it to autoscale automatically. You want to write each and every code on your own. Then you use AWS EC2 instance.
+
+So you can write your own APIs here. You can do your own model training. Because it is basically your own system, but on the cloud. That is what AWS EC2 is.
+
+And the final one we have is Google Cloud Run.
+
+We are going to use Google Cloud when we are using a Dockerized ML model.
+
+So we have an ML model, and we are using our ML model wrapped with Docker. We will create a Docker image.
+
+If you are not familiar with Docker, it’s fine – we have other options. But if you know Docker image, it is just a wrapper of your ML model. Your Docker image will have Linux and Python installed. You create an image of it, which you can send to any system.
+
+Once you have this Docker image, you can use Google Cloud Run. Pass this Docker image, and it will do operations like auto-scaling automatically. It will build REST endpoints (APIs). It will create APIs.
+
+And if you don’t want to manage infrastructure – like scaling, servers, etc. – you just pass the Docker image and Google Cloud Run handles everything automatically.
+
+But the requirement is you need to have containerized deployments. That is the requirement for Google Cloud Run.
+
+This is also serverless. You don’t need to manage servers. You just need to create this part. Just like AWS Lambda – you don’t have to create servers, you just create AWS Lambda instance, and it will handle all configurations automatically.
+
+And this covers all of the deployment strategies which we can pick based on the machine learning application which we have. And now we know which hosting platform to pick based on the kind of ML application.
+
+**U) Setting Up Gradio App in Local Space**
+
+In this lecture we will set up our app locally and run our first radio app. Let’s get started. So I’m using VSCode as my editor. And for Python I’m using Anaconda distributor.
+
+First I will start by opening terminal. This is my Windows system. So this is my Windows terminal. And I will start by creating conda environment. "conda create -n radio_app_temp1 python=3.11". Then the name of the environment. The name of the environment I’m choosing it as radio underscore app underscore temp one. This is the environment which I’m creating. And I’m picking Python version 3.11. You can pick 3.12 as well as 3.10 based on your requirement. But currently I find that Python 3.11 is the most stable version. So I’m sticking with 3.11 and I will start creating this environment.
+
+It will ask me for yes and no. That which of the packages which I want to install, I have to mention yes. And it will start the installation. And now you can see this is the environment has been created. So to activate this environment I have to copy this command and I can activate it. "conda activate radio_app_temp1". And now you can see this particular conda environment has been activated.
+
+The first thing before creating any application, any application is that we have to install our radio. And we will install radio with some standard method that is with requirements dot txt. I will be creating a folder where we are working. This will be our project main root directory. I am going to create Gradio app one. Inside it I’m going to create requirements dot txt. Requirements dot txt and then I will mention "gradio" here and save this file and close this file.
+
+So to install the requirement I have to first move to this Gradio app one folder. Now I have to mention "pip install -r requirements.txt" and this will install the Gradio requirement. It is looking for PyPI index and looking for Gradio. So you can see this is downloading Gradio 5.16.0. So we are able to see this FastAPI. This Gradio is installing FastAPI. And when we are checking the documentation of Plotly, Plotly was using Flask internally and Gradio is using FastAPI internally. And the installation is almost over.
+
+While installing Gradio, a lot of the libraries are also installed. This is huge number of libraries which Gradio is dependent on. So now that Gradio is installed, we can check by typing "python" here and "import gradio". If this is successful, it means Gradio is working in our system. So there is no error. It means this is working. We can exit from this terminal and clear the screen.
+
+So what we will do, we will create our first Gradio application and we will name it as app dot py. But we have to move this app dot py inside our Gradio app hyphen one. And this app dot py should be inside our working directory. So we are working under Gradio app one.
+
+"import gradio as gr"
+
+Then we will define function. And I want to define this function by predict. So this function will take class index. This is just a dummy function which I’m making. And based on this class index I’m going to return something.
+
+" def predict(class_index): class_index = int(class_index) if class_index == 0: return 'cat' elif class_index == 1: return 'dog' elif class_index == 2: return 'person' else: return 'no class label found' "
+
+So I’m returning something from this function. Okay. This function takes index and based on the index it returns something.
+
+So what I’m going to do next is that with the help of Gradio I’m going to create an interface. In that interface the first argument I’m going to pass is the function. The function I want is predict. I want to pass predict function and the input I want to take input from a text box. And if I talk about output, output I also want to mention in text box. So whatever is going to return from this function predict is also a text right? Whatever the value is I want that value to be visible in our text box. And I want to take this input from you can say input text box okay.
+
+" demo = gr.Interface( fn=predict, inputs=gr.Textbox(label="Class Index"), outputs=gr.Textbox(label="Output") ) "
+
+And also this class index because I’m comparing with the numerical value I will convert this class index to int. Now because we will be passing string I’m converting string to integer. So now it is compatible. That is integer with integer, integer with integer, integer with integer. And if index is not falling under zero, one and two, I will say no class label found. And I will store this Gradio interface into demo.
+
+" if __name__ == "__main__": demo.launch() "
+
+This demo which we have created earlier I’m going to launch that demo. Okay. So let’s try to run this app dot py. So it is simple I have to mention "python app.py". And let’s see the response. Okay. This is inputs and outputs. That was wrong because it takes multiple inputs and outputs. Now let’s try to run it again. And hopefully we will not see any error.
+
+And we are able to see that this particular application is running on local URL. So if you hover over it we will be able to see the link and click on this link tab will open. So this is the application running on my browser tab. And you can see this is the class index. And it is able to show you output.
+
+So class index it is taken from the function argument. And output is just output right. So if I just mention class index it should show us dot. If I mention zero now it is able to show us cat. If I mention two, it will show person. And if I mention suppose something as 4078, it will mention no class label found.
+
+So it is able to create this UI, even though we have not mentioned any HTML, CSS, JavaScript, React or any other thing, it is able to create this UI and when we like deploy this, it will look exactly same as running on this browser.
+
+So currently we are not going to deploy it. This is the function which is going to drive our application. So what we will do in coming classes is that we are going to update this predict function. We are going to create a class which will take image as input. And with the help of our model, we will predict something like cat, dog or person which we are going to show as output on our screen. So we have to update this function and we will be loading few more classes, few more modules here in order to update, in order to provide all the functionality required to do the inferencing on our model.
+
+**V) Implementing Gradio App Interface Backend**
+
+To make image classification work, we need a back end function and in this lecture we are going to implement Gradio app inference backend. Let’s get started.
+
+In the previous lecture, we have created a very simple Gradio application which has two different kinds of text box. One is used for input and another is to show the output. So in the input text box we were processing the input with the help of another Python function which was taking that input and based on the condition returning the possible answer. In that case it can be cat or dog, person or no label found. And we were using this output. We were using this prediction from this predict function and showing it into another text box called output. Okay.
+
+And in this lecture what we are going to do, we are going to update all of this code as well as going to add the back end for our image classification application. Let’s get started.
+
+So I will start by creating our back end. And I will create our back end into another module called as core, and this core will be called as module only when we will create init file. Here init file can be empty, but this is what is the requirement to create the module. Now this will be served as a module.
+
+Now in this core I’m going to create another file called "predict.py". So all the methods, all the classes, all the functions with respect to creating our prediction is going to be present in "predict.py".
+
+What I will do here I will "import torch". And create our first class which we are going to use for image classification. Class name is going to be "ImageClassifier".
+
+Our class will have two components. One will be "def __init__(self): pass". This is just definition. Next function is going to be "def predict(self): pass".
+
+So this init method is going to be responsible for loading model weights, loading our model architecture. And this predict method is going to be responsible for taking the image as input and predicting the labels, predicting the class — whether the image belongs to a dog, image belongs to cat, image belongs to person.
+
+So in init what we’re going to do we are going to define our CNN architecture. Also we are going to load our CNN architecture trained weights. And we are going to also create index to label map because our model predicts index not label. So we need to have that index to label map in order to use this predict method. And we are going to show the same thing on our Gradio application here.
+
+We are going to create that map. Here also we are going to define transformations which are required for any image transformation. While we were training our CNN application, we have seen that we need to apply certain transformation on the image like resize, convert to tensor and normalize as well, which needs to be applied to all the images. Right. So what we are going to do, we are going to load the transformation here and use it multiple times in predict.
+
+So these are the tasks which we have to perform here. In the predict method what we are going to do, we are going to load image with Pillow. Why Pillow? Because our PyTorch expects Pillow. And then that particular Pillow image is going to be applied with transformation. That is the basic requirement here. After that, we are going to load that and perform prediction on the loaded architecture with the loaded weights.
+
+We are going to do prediction. Now with the help of label map, which we are going to create here, we are going to map it to classes. And then with the help of OpenCV, we are going to write text on our image, on our input image. So if the image we are passing contains dog, our model will predict dog and we are going to write dog on top left corner of the image. That means that in this image we have found dog. So I’m going to write that text on our input image.
+
+Next thing is the class model predicted as well as output image. And we will show it into our Gradio application. So we are going to return this here. And then we are going to implement our Gradio application. So these are the components which we have to define.
+
+So let me write pass here. So we will start by writing code which will help our model decide whether it is going to be processed with CPU or GPU, that is CUDA. I will mention:
+
+"self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+
+Based on self.device, our model is either going to be processed with CUDA or with CPU, so we don’t have to worry about whether our system has CUDA or not. If there is any issue with the CUDA installation or anything, it will be using CPU.
+
+Next thing is we are going to define our model, but our model is not present in our directory. In the previous lecture, we have trained our CNN architecture. Also, after training we have loaded the weights. So we are going to load that code as well as those model weights and load it here in our Gradio application, along with some things like transformation which we have used to create that model.
+
+Okay. What are the things we need? We need CNN architecture. And using the CNN architecture we are going to create that model instance. On that model instance we are going to load model dict using our trained model using our .pt file. And then we are going to load transformations which we apply on the image. Because this CNN architecture is trained on specific kind of images, which we have already transformed earlier. We need to also provide same kind of transformation, because this particular CNN, which we are going to bring, has those transformations.
+
+So this is the notebook where we have created our architecture. As you can see this is our image architecture. We don’t need data loader because we are only going to pass image path and get the prediction. We are not going to pass any batches because we are talking about inference here. So this is our model architecture.
+
+Our model name was "CustomCNNModel" and it has all the components — convolution layers, a forward method, get convolution output as well. And then we are going to initialize our model. Once the model is initialized we have to load our model just like we have loaded here previously. What we have done, we have to load our model weights like this which we have saved earlier.
+
+So I’m going to train our model for more. In total, I’m going to train this particular model for 100 epochs, and I’m going to save that path. And you will be able to find that path in the resource as well.
+
+Also, we need to copy one more thing from here that is transform. What are the transformations which we have applied on the input image? First we have done the resize. Then we have converted to tensor. Then we have normalized those image pixels to have a mean of 0.5 and a standard deviation also to be 0.5, and the value will range from -1 to 1. I’m going to copy this transform as well as model architecture as well as that model which we have trained from here.
+
+This is the model code. This is the model architecture code and I’ve copied it here. You can see this is model. And there are few components which are missing. That is "import torch.nn as nn". So I’m also going to import. You also need few more components like transform. I will mention "import torchvision.transforms as transforms".
+
+And to use all of this PyTorch we need to mention in requirements.txt. First of all, we have mentioned gradio. Next thing few other things which we need are torch, torchvision, opencv-python, pillow. These are the few libraries which we need. I am going to save in the "requirements.txt" file.
+
+In the "predict.py" we are going to load few more things like "from PIL import Image". And now we have our model architecture. This is our model architecture. This whole thing I’ve copied from our previous notebook.
+
+And then this is the method in which we are working, that is "ImageClassifier". So now I will create, I will initialize our model here. The model name is CustomCNNModel. It has parameters like we can see here on the init method. It has parameters like input dimension and number of classes, which I’m going to copy.
+
+" self.model = CustomCNNModel(input_dim=128, num_classes=3).to(self.device) "
+
+Now this model weights are empty. Although we have initialized this model, this model has not learned anything. This is just plain model. But we already have model which we have trained earlier for hundred epochs. I have already trained that model for 100 epochs, which I’m going to load it here. And then using this self.model, we are going to load that file and load all the weights and biases from the trained model.
+
+So I’ve added that module here. You can see I’ve added another folder called model. And inside this one I have this model that is .pt file. I have trained this for 100 epochs. Also I’ve created another "__init__.py" to create this. The model folder is also module. Core folder is also module which we can use in app.py. So we have this model which we are going to load and all the weights and biases we are going to store in self.model so that it is usable. It will be able to predict either cat, dog or person.
+
+So now we have defined the CNN architecture. Now it’s time to load the architecture trained weights. I’m going to mention:
+
+"self.model.load_state_dict(torch.load(model_path, map_location=self.device))"
+
+So torch.load will be responsible for loading our model. So I will pass model path here because it should be configurable. And if I’m passing model path here my init should also accept model path. This torch.load is going to accept this model path. And based on the model path of this file it is going to load the model and then model location. Also, we will mention that we want to map this model location to self.device.
+
+So now using torch.load given the model path we are going to load the model to the device, either it can be CPU or GPU. That loaded model, we are going to load the state dict of that model and which is already defined in the CustomCNNModel, but this one is going to update with the new trained weights. So self.model is going to have the latest weights and biases. After that we are just going to mention "self.model.eval()".
+
+So we are going to initialize. We are going to create object of ImageClassifier once and use the predict method again and again. So all the components which we don’t want to run again and again we will mention in def init method. That’s why I’m mentioning self.model.eval. Once the model has been created, we have loaded the model weights as well as we have set our model to evaluation mode. So this sets all the things for model.
+
+Next thing is we need to load index to label map. So while we were loading dataset and wrapping it up with the help of data loader, we got this dictionary, and this dictionary is what our model is used to. I’m going to copy this dictionary and save into our ImageClassifier class. So I will mention:
+
+"self.class_names = {0: 'cat', 1: 'dog', 2: 'person'}"
+
+Also, if you want to pass some other dictionary you are working with some other module, you can. So I will mention flexibility. If class_name is None, use default. Else use the given dictionary.
+
+Now we have defined the device, we have defined the model, we have defined the class map, next thing we need is transformation. Again this transformation part I’m going to copy from our previous lecture because that transformation was specific for our model.
+
+" self.transform = transforms.Compose([ transforms.Resize((128, 128)), transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,)) ]) "
+
+So now we have all the components which we require. In our init we have defined device. We have loaded the model. We have defined index to class mapping. Also we have defined self.transform which we will apply on every image. Okay.
+
+So our model, our ImageClassifier class is going to take model_path as well as class_names.
+
+Next we will define predict method. So this method is going to take image_path.
+
+" def predict(self, image_path): image = Image.open(image_path).convert('RGB') image_tensor = self.transform(image).unsqueeze(0).to(self.device) with torch.no_grad(): output = self.model(image_tensor) _, predicted = torch.max(output, 1) label = self.class_names[predicted.item()] img = cv2.imread(image_path) cv2.putText(img, label, (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 2) cv2.imwrite(image_path, img) return label, img "
+
+So this is how we load image, apply transform, predict class, and write the label text on the image. And then return both the class label and the modified image.
+
+Because we are not handling any database here, we just want to show this output on our Gradio app. The output path is going to be labeled image.jpg and save this. So I also want to import OS because I want to save this file. "import os". I want to save this file in the same current directory. So I will mention "cwd = os.getcwd()" and then I will mention "os.path.join". I want to save "cv2.imwrite". This is going to be the output path, and then the image. I’m going to write this image in the same directory where we are running this path, which is going to be "predict.py". And then where this file is located, we are going to get this file path and send it to our Gradio application so Gradio application can plot it.
+
+So currently we are getting what is the current working directory while we are running this file. Then with the help of "os.path.join", I’m going to mention cwd and then the output path which contains the image name. I’m going to mention it in output path. And then finally I will return two things to our Gradio application. That is, label — the label which we got for the input image — as well as the path of our label image. Okay, that is label and output path.
+
+This covers our back end. Our back end will take — first of all we need to initialize our image classifier. We need to pass the model path, the model trained path. Okay, this is the trained model. And then we need to mention class names if you want to change this dictionary. Otherwise we will leave this part empty. Once this is done it is very simple. We will use predict method, we will pass the image path which we want to process, and then we will get label and output. This will be handled by Gradio and we will see while we were creating front end with the help of Gradio.
+
+So now that our back end is ready, we will work on front end and create our application. First of all, we already imported "import gradio as gr", but we also need to import few things like "import os". Then from core — this is our core — from "core.predict" we are going to import "ImageClassifier" which we have created. This is ImageClassifier.
+
+So next thing is we are going to mention "os.getcwd()". This is os, "os.getcwd()". I will get into a variable cwd and then I will mention few things like where our model is in the model path. I’m going to store where exactly our model is. So our model is stored inside folder "model/". This is the name I will mention "os.path.join". From the current path, go look for model and then inside model look for — let me rename to copy everything — and this is the model name "cnn128_model-100.pt". So from the current working directory go to model and get this, and get to this path and create a final path that I will store in model_path.
+
+Then what we are going to do, we are going to create object from our ImageClassifier. First argument it takes is model path. Model path we have as model_path and then we also have class names which we are going to pass it as null. We are not going to pass any class name. And if you want to pass class name, what you can do: we can copy the same thing which we have created earlier, this is the class name just showing you example this class name, and we will pass the same class name to class_name. Okay. This is also what you can do. Instead of mentioning it here, instead of mentioning your "self.class_name" here, you can directly pass this dictionary to our ImageClassifier.
+
+And then we are going to store this ImageClassifier to "classifier". And then we have loaded all the components. That is we have loaded the model, we have loaded our ImageClassifier and passed the model path here. And we also have this class names as well which is index-to-class mapping.
+
+Next thing is we are going to change this method because we already have a predict method inside our ImageClassifier. So I’m just going to mention "classify_image". It is going to take image as input. Let me remove all of this. And in the function I’m going to pass classify_image. And let’s define this classify_image function. I’m going to mention image_path, a dummy image path, and I will mention "uploaded_image.jpg". Whatever this image we are going to pass to this classify_image, I’m going to save it temporarily so that we can also plot on the Gradio. So what I will do, this image_path I’m going to "image.save()" — that is from Pillow. I’m going to save this image temporarily.
+
+And then using this classifier which we have here, that is the object of ImageClassifier, we are going to pass in the predict method the image path. So we are passing the image and what we get as an output, we are going to get label and output_path which I am going to copy from here, paste it here. This "classifier.predict" is going to return two things, that is label and output path. And then we are going to return the same thing that is label and the image object. Okay. We are passing "Image.open(output_path)". Then the output path. We also need to import Image here "from PIL import Image".
+
+Now the input is going to be little different. The input is going to be — let me mention — it is not going to be just text. It is going to be "gr.Image". So it will take an image as input. So it is going to create a UI where we can drop our images, drop icon as well as it can open our file directory as well which we can use. So "gr.Image" it is going to take image of type Pillow. That is going to be the input. So because this image is of type Pillow itself we are going to plot it. We are going to save this with the help of "image.save()". Okay. This is the image path.
+
+And then on the output we have multiple outputs because we have label as well as "Image.open". On the label I want to show this label on the text box. Simple. What I will mention in the output because we have multiple, we have to mention it in list. I will mention "gr.Textbox(label='Prediction')". And then I’m going to label this text box as this is the prediction. And this image which we are sending from Image.open, I want to capture this image using "gr.Image(label='Labeled Image')". Okay. This is not a text box, I’m capturing with image itself.
+
+And I will mention title of this application: "Image Classification Gradio App". Description which we will see as a paragraph: "Upload an image to classify it as dog, cat or person." And that’s it. You already have this "demo.launch()" and our app name is demo.
+
+Let me minimize it a bit. What we have done: we have created, we have found a path to our model, we have taken this path and passed to model path because our ImageClassifier is going to load this model with the help of architecture which we have already defined. This is the model architecture which we have defined. And using that model path, we are going to load the trained weights into our model. Okay.
+
+Our model is CustomCNNModel. And this is our CustomCNNModel. So we need the architecture, we need the blueprint of the model. Then we are going to load the weights. And we also have a predict method which, when given the image, is going to transform the image, add the batch to it, get the image tensor and going to predict from the model. And the prediction we are going to take from the maximum logit. Okay. And we are going to do on the dimension of one because this will be dimension one — all the rows — because we are only going to have a single output. If we are going to have multiple outputs, this will look something like this. Okay. But because we are only going to have a single image, we only support single image here, our output is going to look like this.
+
+Then with the help of our label map, we are going to — whatever the index we are getting from the model — we are going to create label from it. And then we are going to put that label on our image and save that image and pass the path of that saved image along with the label. And then we are going to use this ImageClassifier into our Gradio application. We have a function which takes this image, saves this image, uses this image with the help of "classifier.predict", we are going to predict label as well as the output path in which we have written the text on the image. So it is going to return label as well as the image, not the image path. This will be our output.
+
+So because this is the output of our classify_image which we have mentioned in our Gradio interface as a function, that is classify_image, we need to capture those outputs. One is label — we will mention "gr.Textbox" — and then "gr.Image", which will be our image object from here. And we are going to have few things like title for our Gradio application and the description for our Gradio application. And to launch it we will mention — this is our environment which I have already activated. We have to be inside this folder. So I will go into "gradio_app1".
+
+Now if I run "python app.py", it will initialize the server so that our application can be working here. Okay, so no module named torch. Let me install torch. As I mentioned "pip install -r requirements.txt". It will install all the things which is required. So now we can see all the libraries are installed. We will clear the screen and run "python app.py". Okay. So it is saying that "torch.cuda has no attribute available" because I have mentioned it wrong. It is "torch.cuda.is_available()" in the ImageClassifier we have mentioned. I’ll fix it, clear screen, and then run "python app.py" again.
+
+And you can see it is successfully running. It is running on my localhost "http://127.0.0.1:xxxx". This is the URL of localhost. And then this is the port which this application is running. If you click on it, it will open this tab. So it is available here. I’m going to drag on this screen and you can see this is the component. This is the drop component, drop image component. If you click on it, it will open a file browser. If you don’t click on it, you can directly drag the image. Also these are the output things which is disabled by default because right now we have not done any prediction. So like we will not get any output, right.
+
+I’m going to load an image. I’m going to use this image which is person and drop it here. I’m going to drag the image and drop in this section and the image is loaded. You can see this image is saved and now it is loaded as well. If I click on submit, then this particular function will run, that is our classify_image, and it has already taken the input. Then it will produce output and the output sections will be enabled. If I click on submit it will say this is a person. And you can see if you expand this part where we are showing the labeled image, you can see this is our labeled person image. It is producing two different outputs. So this is your application.
+
+So now that we have tested our application on local system, everything is working fine. We will deploy this application because currently this is running on my local system. If you try to access this URL, you will not be able to open this application because this is local to me. If you run this application in your system, your URL will be same for you but will not be accessible for other persons. Okay. So to make it accessible across web, we are going to deploy this with Hugging Face Spaces.
+
+**W) Setting HuggingFace Space**
+
+Welcome back to another exciting lecture on building our image classification app. So far, we have successfully built our image classification model using PyTorch, designed a Gradio application for inference, and even tested it locally. But now, it is time to take things to the next level, and that is deploying our Gradio application on Hugging Face Spaces.
+
+Before we move on to deployment, the very first step is to set up our Hugging Face account and configure our space properly. So let’s get started. Open any browser and search for Hugging Face Spaces. Click on the first link which is "https://huggingface.co/spaces". Once you are on this page, you will notice that there are multiple categories available like image generation, video generation, text generation, language translation, speech, 3D modeling, object detection, image editing, and many other modules. All these are applications contributed by developers across the community.
+
+Now, just like them, we are going to create our own application which other people can also access. To begin, you need to sign up. So create a new account by entering your email address and password. Then click on Next. You will be asked for your username and your full name. Fill in all the required details, read the terms of service and the code of conduct, and then check the box to agree. Finally, click on Create Account.
+
+After that, you will be prompted to verify your email. Go to your inbox, open the mail sent by Hugging Face, and click on the confirmation link. Once the email is verified, the notification asking you to confirm will disappear. At this stage, your Hugging Face account is successfully set up.
+
+Now let’s go ahead and create our first space. From the Spaces section, click on New Space. For the owner, it will automatically display your username. For the space name, you can provide something like "classification_gradio_cnn". In the description, you can write: "This is an Image Classification Application". For the license, you can choose either MIT or Apache 2.0. In this case, we will go with Apache 2.0 since it is open source.
+
+The next important setting is the Space SDK. If you open Hugging Face documentation, you will see that there are multiple supported frameworks like Streamlit and Gradio. Since we are deploying our Gradio app, we will select Gradio as the SDK. For the space template, select Blank to start from scratch. By default, Hugging Face provides two virtual CPUs and 16 GB of RAM for free, which is good enough for our application. Keep Dev Mode disabled, and finally click on Create Space.
+
+Once the space is created, you will notice that Hugging Face automatically generates a repository for you, which will hold all your project files. This is not GitHub, but it works in a similar way. You will be able to clone this repository, move all your Gradio app code into it, and then push the files using git commands. Hugging Face will then automatically detect your "app.py" file, because by default the Gradio SDK expects this file as the main entry point.
+
+Now, before pushing your code, you must create an Access Token. To do this, click on your profile picture, go to Access Tokens, and then click on New Token. Give it a name, for example "test1_demo". For the repository permissions, select "Write" and for inference, also select "Write". You don’t need other permissions. After that, click on Create Token. Hugging Face will display your token. Copy it immediately and save it securely in your system, maybe in a notepad file, because you will need it later while pushing the code. Remember, you can always delete or regenerate tokens from the token dashboard if required.
+
+At this point, we are ready. We now have our Hugging Face account set up, our space created, and our access token ready. We also have the remote repository URL where we will be pushing our application code. In the next step, we will take our Gradio app files, commit them, and push them to this Hugging Face repository. Once that is done, Hugging Face will automatically deploy our app, and it will become accessible to everyone on the web.
+
+**X) Deploying Gradio App on HuggingFace Spaces**
+
+Congratulations on reaching this far in the course. You have successfully built a custom CNN model, created your dataset loader, trained the model, and even set up a Gradio app for inference. That is truly a huge achievement. Now it is time to take the final step, which is deploying our Gradio application on Hugging Face Spaces so that anyone in the world can access it online.
+
+Let’s get started. I am currently inside our application space, and on this page you will notice the HTTPS URL of our remote git repository. This URL is provided by Hugging Face, and we are going to copy this URL in order to clone the repository onto our local system. Once we do that, we will push our Gradio application code into this repository, which will automatically deploy the application. It is really that simple.
+
+Now let’s move over to our VS Code. I have my terminal open, and you can see that our application is still running locally. For example, if I open Google Chrome and go to the local tab, you will see that our Gradio application is running. When I input an image, the application is able to predict correctly—for example, it detects a person and even shows the label “person” on the image itself. But remember, this is only running on my local machine. What we want is to deploy this exact same application on Hugging Face Spaces.
+
+So let me close the application and copy the repository URL. This is the URL we will be using with the "git clone" command along with the HTTPS of our remote repository. Instead of using the regular VS Code terminal, I prefer to use Git Bash since it behaves very close to a Linux environment. First, I will make sure I am inside the correct directory, and then I am going to clone the repository inside a folder called "SVU", not inside the existing Gradio app folder. Once I run the command, the repository is successfully cloned.
+
+The next step is to copy all our important code components and files into this new repository. That means I am going to copy our "core" folder, the "models" folder, the "app.py" file, and the "requirements.txt" file. Once copied, I will paste them into the Hugging Face repository folder we just cloned. This new folder is still inside our local system, so the changes have not been uploaded yet.
+
+Once the files are copied, I navigate into the cloned repository using "cd classification_gradio_svu" and check the contents with "ls". All the files are present along with the default README generated by Hugging Face, so we don’t need to add another one. Now keep in mind that for Gradio to run your application, your main file must be named "app.py". Hugging Face documentation also clearly mentions this. So make sure the entry point file is exactly "app.py".
+
+Now comes the final step: committing and pushing the files. First, I run "git add ." to stage all the files. Then I commit with the message "git commit -m 'application files added'". Once the commit is done, I run "git push". At this stage, Git will ask for your credentials, which is your Hugging Face username and the access token we created earlier. So keep that token handy.
+
+When I try to push, I encounter an authorization error. This is happening because I had already used an access token from another account on this system, and Git is trying to reuse it. To fix this, we will use the Hugging Face CLI to log out and log in again. First, make sure your conda environment is activated, and then install the CLI with "pip install -U huggingface_hub[cli]". In my system it is already installed, so it shows “requirement satisfied.” For you, it will install for the first time.
+
+Once installed, type "huggingface-cli login". It will ask you to paste your access token. Note that your input will not be visible for security reasons. Paste the token you saved earlier and press Enter. Now the CLI shows that the active token is "test1_demo", which matches the token we created. That means our system is now linked with the correct Hugging Face account.
+
+Now, we return to our repository folder and try "git push" again. This time the code is successfully pushed to the remote repository. You might see some git-related warnings depending on your system, but the important thing is that the push goes through.
+
+Once the push is complete, Hugging Face automatically detects the new code. The page refreshes, and the build process starts. Hugging Face installs all the dependencies listed in "requirements.txt", checks for the "app.py" file, and loads your application. In our case, since we also have "core" and "models" modules, it will take those into account as well. Once the build is successful, the application is automatically started.
+
+You can check the build logs and container logs if you want to track progress. The container starts up, dependencies are installed, and then the application is launched. Since we have already tested the app locally, we know that it should work. And now, we see the green “Running” status, which means our application is live on Hugging Face Spaces.
+
+The interface looks exactly the same as before: we have the drag-and-drop image component, the prediction text box, and the prediction output image section. Let’s test it with the same image as before. I drag the image in, click on submit, and the model predicts correctly—“person.” Let’s try a different image, for example, a cat. Again, the application correctly predicts “cat.”
+
+And that’s it. Our Gradio image classification app is now deployed and live on Hugging Face Spaces. You can share the URL with anyone, and they will be able to use your application directly from the browser.
+
+Congratulations once again. You have successfully completed the journey from building a CNN model, preparing the dataset, training the model, creating a Gradio inference app, setting up Hugging Face Spaces, and finally deploying the application for public access. Your model is now live, interactive, and shareable. Great job, and I will see you in the next one.
