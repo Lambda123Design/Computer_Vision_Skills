@@ -104,6 +104,11 @@ pip install ipykernel
 
 **E) Building our own Custom Filters**
 
+**F) CNN Parameter Calculation**
+
+**G) CNN Parameter Calculations**
+
+**H) Receptive Fields**
 
 ### **A) Reading and Writing Images:**
 
@@ -2831,4 +2836,72 @@ So this time we have used 222 okay. And let's move with our second example of di
 
 So it's the same thing that goes in CNN. In CNN you don't place the values of the kernel, but those values of the kernel is basically figured out by back propagation during our training process. And finally, once you get the best values for this kernels, you know that your loss will be in minimum. Okay. So based on that idea, I just tried to show you that you can even build your custom filters. But actually in deep learning you don't need to do that. Okay? It's completely taken care by. All right guys I hope you enjoyed this lecture. See you in the next video.
 
+**F) CNN Parameter Calculation**
 
+Hello everyone. Welcome to the video of feature map size calculation. So in this particular video we will try to look into what will be the output shape for the CNN layers. And as well as for the max pooling layers, the idea is to focus on the feature extraction part much more rather than the classifier where we will be using dense layers or flatten layers. The idea is whenever you are looking into feature maps, feature maps are basically the output of a convolution layer or a max pooling layer. So we will try to understand how to do the calculations for that.
+
+So right now I have taken a simple CNN network for now. Here you can see we have two convolution layers, one max pooling, and one more convolution layer. So a total of three convolution layers and one max pooling layer. Finally, we have a flatten layer, but flatten doesn't matter to us because it is not doing any type of feature map extraction. So no feature maps. Right now we will focus on the CNN layers and the max pooling layer.
+
+The first thing I have done is written a simple formula. Based on this particular formula, there are two formulas that you have to remember whenever there is a CNN layer. This will be the formula we have, and finally for max pooling layers, this is the one. Let's try to break these things down. Based on the network that we have taken, initially we have our first layer. So let's start with the first convolution layer. Now let's try to break this formula. The CNN input size will be written as output. Your output will equal to the formula. Here you can see input shape, which I will write as I. Then comes your kernel size, which becomes k minus k plus two. Then padding is there, which I will write as 0. This entire thing is divided by stride plus one. Now this becomes the formula.
+
+Now we have to put the values. The input size I have defined here is 32,32,3. So first I will put 32. Then comes the kernel size, which is 3. Very specifically mentioned, so I will just put the value 3. Then comes padding value. Right now we have padding of zero. So padding is equal to valid, meaning padding is zero. Plus divided by stride. Stride is one by default. Then plus one. Now calculating, 32 minus 3 gives 29, plus one becomes 30. So the output shape will be 30 for both width and height. The final output shape will be 30x30, and the number of filters used here is 8. So the output shape is 30x30x8. This is for our first convolution layer.
+
+Now coming to the second convolution layer, we use the same formula. Output equals input. Input size is now 30. Filter size is 3, padding is equal to same. So the padding value is 1. Stride is one, plus one. Calculating, 30 minus 3 plus 2, divided by 1, plus one becomes 30. So the output shape is 30x30. The number of filters used is 16. Generally, whenever we are padding, the size of the image is retained. So the last time the size was 30x30, and this time it is retained. If the width and height were different, you would calculate separately for both, but the formula remains the same.
+
+Next is the max pooling layer. The formula for max pooling is input size minus pool size, divided by stride, plus one. Input size is 30, pool size is 2, stride is 2. Calculating, (30-2)/2 + 1 = 15. Generally, max pooling reduces the spatial dimensions by 50%. So the final output shape is 15x15, with the number of channels remaining the same as previous, which is 16.
+
+Next, we have the third convolution layer. Input size now is 15. Filter size is 3. Padding is valid, so padding is zero. Stride is 2. Calculating, (15-3+0)/2 +1 = 7. So the output shape is 7x7, with the number of filters being 32. After this, we have a flatten layer. Flatten does not have feature maps; it converts everything into a 1D vector. The output will be 7x7x32. Multiplying, 49x32 = 1568. So the 1D vector has length 1568.
+
+I hope now you can calculate all these things in detail. I have already provided the values: I is the input size, K is the kernel size, P is padding, and S is stride. By this time, I hope you are clear on feature map calculation in CNNs. Last time, we did calculations manually. This time, using a model summary, you will see that the output matches our calculations: 30x30x8, 30x30x16, 15x15x16 (max pooling), 7x7x32, and finally flatten gives 1568. So yes, based on the formula we have taken, we have verified calculations both practically and manually. By this time, I hope you understand how to calculate feature map size in CNNs.
+
+**G) CNN Parameter Calculations**
+
+Welcome to the lecture of CNN Parameters Calculation. In this particular lecture, we will understand how to calculate the trainable parameters in CNN. Right now, as you can see, we have a network, a simple CNN network that is available here. The first implementation of this network is done with Keras, and the second one is with PyTorch.
+
+Looking into the network, we have a sequential model. The sequential model contains two convolution layers, one max pooling, flattening, and two dense layers. We will calculate the parameters at every step. Similarly, in the PyTorch implementation, there are two convolution layers, two fully connected layers, and one pooling layer. Based on this, we will calculate the total number of parameters at every layer.
+
+For this calculation, there is a simple formula that you need to remember. For CNN layers, the formula is: kernel height multiplied by kernel width multiplied by the input channels, plus one, and finally multiplied by the number of filters. For dense layers, the total number of parameters equals the number of input neurons plus one, multiplied by the number of output neurons. In both cases, the "+1" accounts for the bias. These formulas are essentially the same; it is just that for fully connected layers, we think in terms of neurons, which makes it easier to understand.
+
+Let’s start with the network. The first layer is a convolution layer with a kernel size of 3x3 and eight filters. The input shape is 32x32x3. Using the formula, parameters equal kernel height times kernel width times input channels plus one, multiplied by the number of filters. So, 3x3x3 + 1 = 28, multiplied by 8 gives 224 parameters. So, for the first convolution layer, the total number of parameters is 224.
+
+For the second layer, another convolution layer, the kernel size is 3x3, and the number of filters is 16. The input to this layer is the output of the first layer, which is 30x30x8. Using the formula: 3x3x8 + 1 = 73, multiplied by 16 gives 1168 parameters. So, the second convolution layer has 1168 trainable parameters.
+
+For the max pooling layer, there are no trainable parameters, as it only reduces the spatial dimensions. Similarly, the flatten layer also has no trainable parameters. Trainable parameters only exist in the convolution and dense layers.
+
+Next is the first dense layer, layer three. To calculate the parameters, we first need to determine the output shape. The output of the previous convolution layer is 28x28x16. After max pooling, it reduces to 14x14x16. Flattening this gives 3136 neurons. Using the dense layer formula: (input neurons + 1) x output neurons = (3136 + 1) x 128 = 401536 parameters.
+
+Finally, the last layer, layer four, is another dense layer. The input neurons are 128, and the output neurons are 10. Using the formula: (128 + 1) x 10 = 1290 parameters.
+
+Adding up all layers: conv1 (224) + conv2 (1168) + dense1 (401536) + dense2 (1290) = 404218. This is the total number of trainable parameters in the CNN network.
+
+Both Keras and PyTorch implementations yield the same results. Running the code in Keras shows 404218 trainable parameters. Similarly, using PyTorch summary, the total is also 404218. Therefore, the calculations are correct and can be verified using either framework.
+
+I hope this helps you understand how to calculate parameters in CNNs. See you in the next video.
+
+**H) Receptive Fields**
+
+Hello everyone. Welcome to the lecture of Receptive Fields in CNN. In this lecture, we will try to understand what receptive fields are, and then we will categorize them.
+
+A receptive field is an area in the input space that affects the output of a given neuron. The input space can be an image, and it affects the output of a neuron. When we talk about the output of a neuron, you can think about the output of a CNN layer, basically the feature maps in CNNs. As we move deeper into the network, each neuron’s receptive field grows, meaning it considers a larger portion of the image.
+
+Consider an example with three layers: layer one, layer two, and layer three. If we pick a pixel in layer two, it may only be looking at nine pixels from layer one if the filter size is 3x3. As we move to layer three, a pixel there will look at a larger portion of the image because the receptive field grows as we add layers. Initially, it may look at only nine pixels, but after more layers, it can look at a much bigger portion of the input.
+
+Each layer in a CNN applies convolution filters that process small local regions. Due to multiple layers stacked together, higher layers cover a wider portion of the input image. As a result, the receptive field increases as we go deeper. The earlier layers have smaller receptive fields, capturing edges, textures, and simple features. Deeper layers have larger receptive fields, capturing high-level patterns like shapes or objects.
+
+Now, let’s calculate the receptive field. The formula is:
+RL = RL-1 + (L - 1) * SL-1,
+where RL is the receptive field of the current layer, RL-1 is the receptive field of the previous layer, L is the kernel size of the current layer, and SL-1 is the stride of the previous layer.
+
+For example, consider a simple CNN with three layers, each with a 3x3 filter and stride 1. For the first layer, RL = 1 + (3-1) * 1 = 3. For the second layer, RL = 3 + (3-1) * 1 = 5. For the third layer, RL = 5 + (3-1) * 1 = 7. So a neuron in layer three will have a 7x7 receptive field in the original image.
+
+Receptive fields can be categorized as local and global. A local receptive field refers to a small region in the input image. In the early layers of a CNN, each neuron is connected to only a small patch of pixels, typically defined by the kernel size (e.g., 3x3 or 5x5). For example, in the first layer, a 3x3 kernel can only see nine pixels at a time.
+
+A global receptive field refers to neurons in deeper layers. In deeper CNNs, neurons have larger receptive fields. For example, in a five-layer CNN with each layer having a 3x3 kernel and stride 1, the receptive fields will increase as follows: layer one = 3x3, layer two = 5x5, layer three = 7x7, layer four = 9x9, and layer five = 11x11.
+
+The local receptive field depends on the filter size at each layer position, while the global receptive field keeps increasing as we go deeper into the network. The global receptive field can eventually cover the entire input image, capturing high-level features such as shapes, objects, or context.
+
+For example, if the image resolution is 100x100, after adding convolution and pooling layers, the receptive field should ideally be close to the image resolution, e.g., at least 90x90. Larger receptive fields capture more high-level features, which is always beneficial. Therefore, it is good practice to consider receptive fields when designing CNNs.
+
+Receptive fields are important because they help us understand how much of the input a kernel can “see” at each layer. By stacking more layers, the receptive field gradually increases. The idea is that the global receptive field should at least be close to the input image resolution to capture enough context. This lecture is primarily theoretical, giving you an understanding of receptive fields, which will help when analyzing CNN architectures.
+
+I hope this lecture provides a clear understanding of receptive fields in CNNs.
