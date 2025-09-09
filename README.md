@@ -12,6 +12,8 @@ pip install ipykernel
 
 **Table of Contents:**
 
+### (I) Computer Vision (Open CV With Python)
+
 **A) Reading and Writing Images**
 
 **B) Working with Video Files**
@@ -109,6 +111,18 @@ pip install ipykernel
 **G) CNN Parameter Calculations**
 
 **H) Receptive Fields**
+
+### (IV) Image Classification
+
+**A) What is Image Classification?**
+
+**B) LeNet Architecture**
+
+**C) LeNet with Keras**
+
+**D) LeNet with Pytorch**
+
+### (I) Computer Vision (Open CV With Python)
 
 ### **A) Reading and Writing Images:**
 
@@ -2905,3 +2919,436 @@ For example, if the image resolution is 100x100, after adding convolution and po
 Receptive fields are important because they help us understand how much of the input a kernel can “see” at each layer. By stacking more layers, the receptive field gradually increases. The idea is that the global receptive field should at least be close to the input image resolution to capture enough context. This lecture is primarily theoretical, giving you an understanding of receptive fields, which will help when analyzing CNN architectures.
 
 I hope this lecture provides a clear understanding of receptive fields in CNNs.
+
+### (IV) Image Classification
+
+**A) What is Image Classification?**
+
+Welcome to the video of what is image classification. So right now we'll be talking about one of the most important tasks in computer vision which is image classification. So we have just uh, given a brief about image classification okay. So let's go through that.
+
+So the first thing if you look into so image classification is a fundamental task in computer vision okay. Where an algorithm assigns a label okay or a category to an input image okay. So we have to understand like what is basically the algorithm here right now okay. So the algorithm is basically the model that you have. Okay. So like uh most of the times it will be CNN model only okay. So algorithm refers to a CNN model. Now the job of this algorithm is to assign a label or a category to the input image Okay. Label or category to an input image. Okay.
+
+So, for example, if I take this algorithm will take an image as an input. And for that particular image one label will be assigned okay. So label if I'm talking about. Okay. So label okay or class both the terms that can be used okay. So now this particular algorithm will basically assign a label for the input image. Now this process involves training a deep neural network. So the idea is that we'll be training this particular algorithm okay. So that's why it's talking about training a deep learning model. Often a CNN model okay. To recognize patterns.
+
+Now the idea is that this particular algorithm will be focusing on extracting. Features and patterns okay. So if I talk about the model the model will be responsible for extracting features and patterns. From the input image. Okay. And based on those feature extraction, it will try to decide like what is the class okay for that particular input image.
+
+Now one important thing if you focus here. So here multiple type of computer vision task that has been mentioned. So right now we are working with classification. Then like in our next module we'll be talking about classification and localization. And then finally comes our object detection okay. So right now inside image classification whenever you are performing any task the idea is what is the object okay.
+
+So when I'm talking about the object. So in our first example here okay the object is basically a cat okay. So here you will try to solve the problem of what is the object. Okay. And once you have, uh, understood basically that once the feature extraction process has been completed. Okay. And based on that, the algorithm will basically predict, okay, like what is the object simply like it can be a cat okay. Or a dog. As simple as that.
+
+So right now in this particular example we have a single object. But there can be multiple objects also. Okay. So for this you have to understand that. Then we'll be breaking the task of image classification into two parts. The first part will be basically the single level classification. So the idea is basically inside the input image you will have a single object okay. So it can be a dog or a single cat okay.
+
+And again the second problem statement that we have is basically the multi-label classification. So two problem statement that comes under image classification. The first one is basically the single level classes, the single level classification, and multi-level. The idea is in multi level there will be multiple objects okay. It can be of the same class only. So for example there can be three dogs okay. Or there can be three cats okay. So simply the idea is what is the object okay.
+
+So now going forward we can break it into two parts the single and the multi level okay. Single level slash multi level. So when you will be working with multi level. So when you know that inside your data set the images are having multiple objects. And when will be performing a single level classification. When you know that inside your data set inside the images there is a single object available okay. So the idea is we have to just understand like what is the object in the image, and based on that, we have to give out basically the result. Okay.
+
+So now this is one of the most, uh, I will say interesting task in computer vision. Okay. And based on this okay, so a lot of things or a lot of research that has been going on. So I hope that you got a basic idea with respect to what is image classification and what we are trying to solve here. Okay. Now let's move to the next part.
+
+So right now, uh, we have taken that multiple image classification computations which are fed. So if you are very famous ones like the ImageNet Large Scale Visual Recognition challenge. So like the ImageNet competition is very very famous. Then comes like multiple Kaggle competitions also uh uh held okay by different organizations. Then comes your Google Landmark recognition challenge. Okay. So based on image classification, there are multiple competitions we can based on that like multiple data sets that are now coming to few of the most famous data sets like image net, like very, very famous data set. It contains like more than 14 million images across 1000 categories. It means that you have total 1000 classes and 14 million images.
+
+Then comes your CIFAR ten and CIFAR 100. So these are much smaller scale data sets okay. So in CIFAR ten you have ten classes. And in CIFAR 100 you have 100 classes. Then comes mNIST okay. The most I will say common okay data set which is used for classification work. Then comes your fashion mNIST where clothing and fashion accessories are kept and total you have ten classes. Then another one which is basically the Coco. Okay. So though it is used primarily for detection, but it can also be used for classification also okay. So Coco is also very very famous.
+
+So if I talk about like ImageNet and Coco are the most famous ones. Then comes open images. So this is also having a very large scale data set, okay, and different type of labels and different type of images. If I'm talking about like, what are the major ones that you need to focus on. So simply you can, uh, start working with a subset of ImageNet, okay. Or you can work with Coco also or open images also. Okay. So very, very popular.
+
+Now coming to the next part like how to evaluate your algorithm or basically the model, the CNN model that will be building. So for that also we have different type of metrics okay. And these metrics are very similar uh, to machine learning that you have used previously okay. So the first one is basically the accuracy if I'm talking about. Okay. So accuracy will be there. Okay. The second one is basically the precision and okay. And the third one is recall. And finally based on that we try to calculate the F1 score. Okay. So very very similar metrics that you have been used in machine learning. Okay.
+
+Now other than that. Okay. So there are also few metrics okay. Which are used like top one accuracy. Okay. So top one accuracy. So what happens inside top one accuracy. So it basically measures whether the highest confidence prediction matches the correct class. Okay. It means that it will try to look for the exactly the correct result. Okay. So this is basically the top one accuracy where the idea is that for whichever class you should get the highest confidence during prediction. Okay.
+
+And the second one is basically the top five. Okay. So in the top one it is always about the highest. Uh I will say uh confidence prediction. It means that the probability value for that particular class will be higher and in top five accuracy. What happens? It will try to look that the result is available in the top five probabilities or not. Basically, the model will be throwing out probabilities or basically it will be predicting. The idea is that in the top five results of the prediction okay, the results should be available okay. So this is also used like top one and top five in multiple research papers that you can go through okay.
+
+And then comes your most important part like what is the loss function that is being used here. So loss function for image classification. Okay. So it will be basically log loss that you have learned in logistic regression a very similarly okay. So and in deep learning we tell it like cross entropy loss. Okay. So going forward in any type of implementations that we are going to use. So similarly will be talking about the log loss a lot. Okay. Majorly the implementations that will be doing for image classification will be using log. Okay.
+
+Now these are the few important things that you should know about image classification. Okay. Now coming to the next part like I want to talk with respect to the image net. Okay. Like ImageNet competition like the Ilsvrc. Okay. So now from this particular competition multiple models emerged. Okay. And those models that we will be discussing in our upcoming videos also. Okay. So let's talk a little bit about the models. Okay.
+
+Now the first one that will be going through will be the most basic one, which will be Lynnette. Okay. Very, very old architecture. Okay. But yes, once will be going through this. Okay. Second comes AlexNet. Okay. So 2012 winner. Okay. So of the ImageNet competition, then we will jump to VGG. Okay. Then we will come to GoogLeNet. Okay. And finally we'll be talking about ResNet. Okay. So there are other models also like Squeezenet Densenet. Okay. Efficient net. Okay. But for now we'll be talking about this particular models. But let me just mention them. So Densenet is also good. Good model. Okay. Then comes your squeezenet. Okay. And then finally comes your efficientnet. Okay, so few other models also that I have listed here. Please.
+
+So these are a few of the models that came from the ImageNet competition. Okay. And which has been used in production a lot. Okay. So it's very very good. Okay. So few of these models I will say like majorly if I'm talking about ResNet okay. Widely used okay. Then comes like Densenet is also widely used okay. So similarly Efficientnet very good. Okay. So yearly like every year one network that came or basically one model that become very, very famous and everybody is using it in production. Okay.
+
+So this was all about the image classification. I hope that you guys got a simple idea. Okay. Now going forward we'll be starting with the architecture. Okay. So initially we will start with LeNet. And we'll be doing the implementations in our frameworks like Keras and as well as in PyTorch. So guys see you in the next video.
+
+**B) LeNet Architecture**
+
+Welcome to the video of LeNet five. CNN architecture. So the first thing when I'm talking with respect to image classification architectures. Okay, so this is the first architecture that we are discussing. So we will go in depth with respect to the layers. What is going inside LeNet five. So let's start with the introduction.
+
+So the first thing that comes is basically the architecture is developed long back okay. So like LeNet is one of the earliest CNN architecture developed by Yann LeCun in the year 1998. Okay. So let's quickly write down a few points. So 1998 developed by Yann LeCun. Okay. Now this particular architecture of LeNet five was designed very specifically for handwritten digit recognition. Okay.
+
+So for that, I have kept one example with respect to one of the data sets which has been used, which is basically the mNIST. Okay. So mNIST data set. So in that particular data set how the data looks like because there are images in the data set. Okay. And the numbers are between 0 to 9. Okay. So ten classes that I have. Okay. So ten classes. 0 to 9. Okay. Now very specifically LeNet was used for handwritten digit recognition. And it played a very crucial role also in the development of deep learning. Okay. So I will say a very successful. Okay. But old. Okay. So but old architecture Which we don't use right now. Okay.
+
+Because we have started with the image classification architecture. And this is one of the oldest one back in 1998, which was introduced. Okay. Because later on a lot of other developments, which has been done starting from 2012. Okay. So that will be discussing with our next image classification architecture. So if I'm talking about the use cases okay. So let's talk about the use cases where it can be used. This LeNet the first place that comes around is the handwritten. Digit recognition. Okay. So the second use case is basically like bank check digit recognition. Okay. And even with respect to like third use case if I'm talking about. Okay. So like with respect to recognizing recognizing. ZIP codes. Okay. So by the US Postal services okay. So they're also it has been used. So a lot of important use cases were solved using LeNet five.
+
+And the total number of layers are seven layers that it has okay. So seven layers in this particular architecture that we have out of which. Three convolution layers. So I'll be just writing conv for now okay. Then comes two pooling layers or subsampling okay. So both the terms are used. Okay. And finally in the last there will be Dense layers. Okay. So total number of layers are seven. But very specifically we say LeNet five because the idea is to focus much more on the convolution layers and the pooling layers. Okay. So that's why the name LeNet five.
+
+So now coming to the architecture right now. Okay so this is a very high level architecture with respect to the numbers that has been taken into account. Okay. So as you look into this okay. So like the first which is basically the input layer where the image is passed. Okay. And you can see right now the size is 32 cross 32 okay. And then comes here convolution layer. In that convolution layer we have used six filters okay of size five cross five okay. So once you have applied a convolution uh of five cross five on top of an image of 32 cross 32. You get the output as 28. Cross 28. Okay, so let's try to break it down okay. And write step by step all the calculation.
+
+So the first layer that comes is basically the input layer. Okay. So in the input layer what we have is basically the image that we are passing okay. So which is 32. Cross 32. Cross one okay. So one why I am writing because this is grayscale image. Okay. Or we can use the term monochrome also. Okay. Or black and white okay. So that is also used. So right now we are passing multiple images of size 32. Cross 32. Okay. Now so this was basically our first layer.
+
+Then the second layer that comes is basically our convolution one. Okay. So let's write conv one. In this particular layer we are giving the input of. 32 cross 32 cross one. We are using a five cross five filter okay. And the number of filters that we are using is six. So based on that we are getting the output of 28. Cross 28 cross six. Okay. So generally what happens. So right now 32 cross 32 is basically the input. Okay. Now this is five cross five. So because of that four pixels at the top at the bottom that we lost okay. So because of that, the image got reduced or the feature map got reduced, the width and the height dimension that got reduced very specifically. Okay. And here, uh, six is basically the number of filters that I have used. So that's why in the last the total number of uh, feature maps are six. So this is basically the output okay.
+
+So similarly if we have not used five cross five. So let's take an assumption. And if we change it back to three cross three. So then what happens. So simply I can say that in that particular case the output size will be changed. And it will be 30 cross 30 cross six okay. So this is just an small change 30 cross 30 cross six okay. If we have used a three cross three filter here. But in the original Architecture, five cross five filters has been used. Okay, so based on that we have gone through the output.
+
+Now the second thing. Okay. So now we'll be taking into account our second layer which is basically the average pooling layer okay. So I will just write pool one. In this pool one the input becomes now 28. Cross 28 cross six okay. So here as we look into so here we can see a kernel size of two cross two with a stride of two okay. So which has been used. So two cross two okay. And stride I will just write as two for now okay. So you have to understand. So here I am writing slash six. So this is basically the number of filters okay. But this is basically the stride that I am using here okay. So for pooling layers. In pooling layers there are no concept of number of filters. So that's why we are just writing here as two okay. Which is basically the stride.
+
+Now here what we will get the output. So as we look into. So two cross two. So because of that we will be getting the output of 14 cross 14. Because there will be a reduction of 50% with respect to the dimensions. Okay. So and finally comes your channel number which is basically six okay. So this won't be changed. Now coming to the next part which is basically our conv two. In my convolution two okay. So the input becomes 14. Cross 14 cross six okay. And here also we are using a five cross five filter okay. But here the number of filters has been changed. So let's look into the architecture table. So here we are using 16. Okay so 16 is the number okay. So again there will be a reduction after the convolution operation. So this 14 becomes ten cross ten cross. 16 okay. Now this is the output from the convolution two layer okay.
+
+Now coming to now coming to the pool two layer. In the pool two layer the input becomes ten. Cross ten. Cross 16. Okay. And here again two cross two okay. With a stride of two which has been taken into account Okay, so if I show you here. So the second one. Okay. So the kernel size is two cross two and the stride is also two. Okay. So based on that we'll be getting the output of five cross five cross the number of channels which remain same in a pooling operation okay. Then finally comes our conv three. In my convolution three the input becomes five. Cross five. Cross 16 okay again of five cross five filter has been used okay. And let's look into how many filters have been used which is 120 okay. So simply if you jump here so this is 120 with five cross five. So based on that. We will be having the output of. One cross. One cross 120. Okay.
+
+So finally we can see that we started with a very big image size okay. So originally the size that we had was 32 cross 32. But finally after the convolution operation it has been reduced to one cross one. It means that I can say that we have gone through the entire image, or basically traversing to the entire image through the convolution layers and the pooling layers. So my information from those images will be extracted. Okay. Now based on this particular architecture. So in our next lecture we'll be talking the implementation in Keras and as well as in PyTorch also.
+
+So now once we have done with the convolution layers okay. So finally what happens. So then comes our dense layer one. Dense layer one okay. So in the dense layer one we have used the number of neurons. So let's look how many neurons have been used 84 okay. So here the number has been given 84 okay. 84 neurons. And then comes your output layer. Okay. Which is basically the dense layer two okay. So like the other name can be Dl2 because this is your dense layer two. So here we have ten classes. So that's why ten neurons. Okay. And your activation will be softmax because we have multiple classes.
+
+So if you look into uh this convolution one pooling one. Convolution two pooling two. So at this point of time ReLU was not developed guys. Okay. So because of that, at every point we are taking the activation function as tanh. But going forward like with the recent architectures that are coming out. Okay. So everywhere ReLU is used widely. Okay. So like these are few of the old things okay. But yes you should know. And this is our first image classification architecture. So I thought about let's go in detail a little bit. Okay so guys see you in the next video where we'll be talking about the implementation of LeNet in Keras.
+
+**C) LeNet with Keras**
+
+Welcome to the video of LeNet Implementation in Keras. Okay so right now, this is basically the architecture which we have discussed in the last video. Okay. So this time we will be implementing it.
+
+So first of all let's get started with the imports. Okay.
+
+So first we are importing Keras from TensorFlow. "from tensorflow import keras"
+
+Then we are importing the dataset MNIST. Okay so this is the dataset that we'll be working with. "from tensorflow.keras.datasets import mnist"
+
+Then the next thing we are importing layers, which is basically Conv2D, MaxPooling2D and AveragePooling2D. "from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D"
+
+Okay. So right now in this implementation we'll be working with MaxPooling2D. "from tensorflow.keras.layers import Dense, Flatten"
+
+So I won’t be working with AveragePooling because I know that max pooling will perform better.
+
+Similarly with our activation function also — we won't be using tanh which was implemented in the original paper, but we'll be using ReLU.
+
+Then we import what type of model that I want to build, which is basically Sequential. "from tensorflow.keras.models import Sequential"
+
+Keras provides you majorly two types of models: one is the functional one and the other one is the sequential. Right now the model that I'll be building will be just sequential layers one by one. So I am using a Sequential model. Okay.
+
+So "model = Sequential()".
+
+Now the next thing that I have is basically getting the dataset into memory. Okay.
+
+So I'm performing an mnist.load_data. " (x_train, y_train), (x_test, y_test) = mnist.load_data()"
+
+And here I will be getting the dataset basically within my x and y train and x test and y test. Simply I am loading the dataset.
+
+After that I am performing a reshape operation. Okay.
+
+So right now particularly in this reshape operation okay. You can simply see:
+
+"x_train = x_train.reshape(x_train.shape[0], 28, 28, 1)"
+"x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)"
+
+So I have kept x_train.shape[0], 28, 28, 1. Okay.
+
+So simply when I try to print "x_train.shape[0]", you will see the total number of images in the train set. It is basically showing 60,000. Okay.
+
+And then finally for our test set also we have 10,000.
+
+Okay. So the total number of images in the dataset is basically 70,000, out of which we are using 60,000 for train and 10,000 for test. Okay.
+
+Now move to the next part.
+
+So this is the part where we are performing normalization on top of the images. "x_train = x_train.astype('float32') / 255; x_test = x_test.astype('float32') / 255"
+
+So we are trying to divide every pixel by 255.
+
+The idea is very simple: we know that the range for each of the pixels is between 0 to 255. Okay. So we are actually dividing all the pixels with the max value 255.
+
+Now in the next step we are performing one-hot encoding of the labels. Okay.
+
+So using this "from tensorflow.keras.utils import to_categorical"
+
+And then "y_train = to_categorical(y_train, 10); y_test = to_categorical(y_test, 10)"
+
+This actually helps you basically to convert class vectors (integers) to binary class matrix.
+
+So this is basically the one-hot implementation.
+
+And let me just execute this. Okay. And let me just show you. So this is how y_test looks like.
+
+So similarly you can change the index and you will see it is one-hot encoded simply. Okay.
+
+So based on that, for the results we have performed one-hot encoding.
+
+Now the most important part which is basically the network structure.
+
+So right now the first thing that we are going ahead with is:
+"model = Sequential()"
+
+So we have defined our sequential model. Okay. So we have created an object of the Sequential class.
+
+And then I have added one layer. "model.add(Conv2D(6, kernel_size=(5,5), activation='relu', input_shape=(28,28,1)))"
+
+So here I mentioned the number of kernels is 6. Okay.
+
+Then comes the filter size, which I have kept as (5,5), according to our original implementation.
+
+But here we have changed the activation function. In the original one it was tanh. But here we are using ReLU. Okay.
+
+And then I am passing what is the input shape to the convolution layer which is (28,28,1).
+
+So input is 28 width, 28 height, and 1 channel (because grayscale).
+
+So now if I perform this convolution operation, what will be the output?
+
+The input is (28,28,1). With (5,5) filter, the output will be "24x24x6".
+
+Now the next step: we take this output, which becomes the input for our MaxPooling layer. "model.add(MaxPooling2D(pool_size=(2,2)))"
+
+So here we kept the window size (2,2). So the output will be "12x12x6".
+
+Because the number of channels doesn’t change when applying pooling.
+
+Now in the next step, this becomes the input to our second convolution layer.
+
+So: "model.add(Conv2D(16, kernel_size=(5,5), activation='relu'))"
+
+So here we have increased the number of filters to 16.
+
+Based on this, the output will be "8x8x16".
+
+Now the next layer is the second pooling layer.
+
+So: "model.add(MaxPooling2D(pool_size=(2,2)))"
+
+From here the output becomes "4x4x16".
+
+Now in the next step, another convolution layer.
+
+But one important thing here is that we keep "padding='same'". "model.add(Conv2D(120, kernel_size=(5,5), activation='relu', padding='same'))"
+
+Because otherwise if we again use a 5x5 filter, the size would reduce to zero.
+
+So with "padding='same'", the output will be "4x4x120".
+
+Now once we have completed the convolution operation, then we perform a Flatten operation. "model.add(Flatten())"
+
+And then we pass the flattened output to our dense layer.
+
+So in the dense layer one: "model.add(Dense(84, activation='relu'))"
+
+In the original implementation, the number of neurons was 84.
+
+Finally comes the output layer: "model.add(Dense(10, activation='softmax'))"
+
+Here we define 10 neurons because we have 10 classes (0–9). And because of multiple classes, the activation is softmax.
+
+Now let’s check the summary. "model.summary()"
+
+This prints all layers, output shapes, and trainable parameters.
+
+We see the total number of parameters is close to 200,000.
+
+Now compile the model:
+"model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])"
+
+And now fit the model:
+"model.fit(x_train, y_train, batch_size=128, epochs=20, verbose=1, validation_data=(x_test, y_test))"
+
+So here I gave batch size 128, epochs 20, verbose 1, and validation data.
+
+Training starts with loss ~1.69, reduces gradually. Validation accuracy goes up — close to 98%.
+
+Finally, after 20 epochs, the accuracy is around "0.98" and loss around "0.06".
+
+So I will say yes, this looks good.
+
+Now the next step is to evaluate the model. "score = model.evaluate(x_test, y_test, verbose=0)"
+
+And print the results: "print('Test accuracy:', score[1]); print('Test loss:', score[0])"
+
+So accuracy ~98% and loss ~0.06.
+
+You can increase the epochs to reach close to 99%.
+
+So in this particular implementation we have gone through the LeNet architecture in Keras.
+
+In our next lecture we will be doing the same in PyTorch.
+
+**D) LeNet with Pytorch**
+
+Welcome to this tutorial on implementing LeNet-5 in PyTorch.
+
+In the last session, we had already implemented the LeNet-5 architecture using Keras, but this time we’ll be doing the complete implementation using PyTorch. So let’s get started.
+
+Step 1: Importing Libraries
+
+First of all, we begin with the import section. So, we’ll import the main PyTorch library using:
+"import torch".
+
+Then, we’ll import the neural network module with "import torch.nn as nn". This will help us build the layers of our neural network.
+
+Next, we bring in the optimizer module with "import torch.optim as optim". PyTorch provides many optimizers like SGD, Adam, RMSProp, and so on, and we’ll be free to choose from them.
+
+Since this is a computer vision problem, we’ll also import torchvision using "import torchvision". Torchvision provides datasets, model architectures, and image transformation utilities that are widely used in vision tasks.
+
+From torchvision, we’ll bring in the transformations module with "import torchvision.transforms as transforms". This will allow us to do resizing, normalization, and even data augmentation.
+
+Next, we need to load datasets in mini-batches efficiently, so we’ll import "from torch.utils.data import DataLoader". DataLoader not only loads the data in batches but also speeds up training by using parallelism.
+
+For visualization purposes, we’ll use "import matplotlib.pyplot as plt". And for handling arrays, we’ll import "import numpy as np".
+
+So these are all our imports.
+
+Step 2: Defining the LeNet-5 Model
+
+Now comes the most important part — defining the LeNet-5 architecture.
+
+We start by creating a class "class LeNet5(nn.Module):". This class will represent our LeNet-5 model. Notice that it inherits from nn.Module, which means it can use all the properties and methods of PyTorch’s neural network module.
+
+Inside this class, we first define the __init__ method with "def __init__(self):". The very first line inside is "super(LeNet5, self).__init__()". This ensures that all the properties of nn.Module are properly initialized.
+
+Now we start defining our layers.
+
+The first layer is a convolution layer:
+"self.conv1 = nn.Conv2d(in_channels=1, out_channels=6, kernel_size=5, stride=1, padding=2)".
+Here, the input channel is 1 because we’re working with grayscale images (MNIST dataset). The output channels are 6, meaning we’ll apply six different filters. The kernel size is 5x5, stride is 1, and padding is 2. Padding ensures that the output image has the same size as the input image (28x28 remains 28x28).
+
+Then comes the activation function:
+"self.relu = nn.ReLU()".
+Instead of Tanh (which was used in the original LeNet paper), we are using ReLU here for better performance.
+
+Next, we add an average pooling layer:
+"self.pool = nn.AvgPool2d(kernel_size=2, stride=2)".
+This will reduce the image size by half. So, from 28x28 it becomes 14x14, while keeping the number of channels unchanged.
+
+Then comes the second convolution layer:
+"self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1)".
+Here, the input channels are 6 (from the previous conv layer), and we increase the output channels to 16.
+
+After this, we flatten the output and connect it to fully connected layers:
+"self.fc1 = nn.Linear(16*5*5, 120)"
+"self.fc2 = nn.Linear(120, 84)"
+"self.fc3 = nn.Linear(84, 10)".
+
+Here, we used three fully connected layers instead of two, making a slight modification from the original implementation. Again, we’ll use ReLU activation after fc1 and fc2.
+
+Step 3: Forward Propagation
+
+Now we define the forward function with "def forward(self, x):".
+
+Inside the forward pass, we apply layers step by step:
+
+First convolution → ReLU → Pooling:
+"x = self.pool(self.relu(self.conv1(x)))".
+
+Then second convolution → ReLU → Pooling:
+"x = self.pool(self.relu(self.conv2(x)))".
+
+Next, we flatten the output:
+"x = x.view(-1, 16*5*5)".
+
+After flattening, we pass through fully connected layers:
+"x = self.relu(self.fc1(x))"
+"x = self.relu(self.fc2(x))"
+"x = self.fc3(x)".
+
+Finally, we return x. So this completes our LeNet-5 forward pass.
+
+Step 4: Hyperparameters
+
+Next, let’s define the training hyperparameters.
+
+We set:
+"batch_size = 64"
+"epochs = 10"
+"learning_rate = 0.001".
+
+These values can be tuned depending on your hardware. With a stronger GPU, you could increase the batch size.
+
+Step 5: Data Loading and Transformations
+
+Now we move on to loading and transforming the MNIST dataset.
+
+We define a transformation pipeline using:
+"transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])".
+
+Here, ToTensor() converts images to PyTorch tensors with values between 0 and 1. Normalize() standardizes them using a pre-computed mean of 0.1307 and standard deviation of 0.3081 for MNIST. This centers the pixel values around zero, helping the model train faster and more stably.
+
+Then we load the training dataset:
+"train_dataset = torchvision.datasets.MNIST(root='./data', train=True, transform=transform, download=True)".
+
+Similarly, we load the test dataset with "train=False".
+
+Next, we create DataLoaders:
+"train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)"
+"test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)".
+
+Note that we shuffle the training data to avoid the model memorizing the order of samples, but we don’t shuffle the test data.
+
+Step 6: Model, Loss, and Optimizer
+
+Now we initialize our model:
+"model = LeNet5().to(device)".
+
+The device is checked with "device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')" so it runs on GPU if available, otherwise CPU.
+
+For the loss function, we use:
+"criterion = nn.CrossEntropyLoss()".
+
+For optimization, we use Adam:
+"optimizer = optim.Adam(model.parameters(), lr=learning_rate)".
+
+Step 7: Training the Model
+
+Now let’s train the model.
+
+We loop over epochs using:
+"for epoch in range(epochs):".
+
+For each epoch, we set the model to training mode:
+"model.train()".
+
+We initialize the running loss as 0. Then for each batch:
+
+Move images and labels to the device.
+
+Zero the gradients using "optimizer.zero_grad()". This is important because PyTorch accumulates gradients by default.
+
+Perform forward pass: "outputs = model(images)".
+
+Calculate loss: "loss = criterion(outputs, labels)".
+
+Perform backward pass: "loss.backward()".
+
+Update parameters: "optimizer.step()".
+
+We accumulate the running loss, and at the end of the epoch, we calculate the average loss by dividing by the number of batches. Finally, we print the epoch number and the loss.
+
+Step 8: Evaluation
+
+Once training is done, we evaluate the model on the test set.
+
+We set the model to evaluation mode with "model.eval()".
+
+We disable gradient calculation using "with torch.no_grad()" for efficiency.
+
+Then we loop through the test loader, get predictions using:
+"outputs = model(images)", and take the class with the highest probability:
+"_, predicted = torch.max(outputs, 1)".
+
+We compare predictions with labels and update counters for correct and total predictions.
+
+Finally, we calculate accuracy as:
+"accuracy = 100 * correct / total".
+
+Step 9: Plotting Loss and Accuracy
+
+We also plot the training loss and test accuracy across epochs using Matplotlib. This helps us visualize how well the model is learning.
+
+Step 10: Inference
+
+Lastly, we define a simple prediction function to test on new images:
+
+Inside the function, we:
+
+Switch the model to evaluation mode.
+
+Unsqueeze the image to add a batch dimension with "image = image.unsqueeze(0)".
+
+Pass the image through the model to get predictions.
+
+Return the predicted class.
+
+We then visualize a few samples from the test set and see their predictions. For example, predictions like 7, 2, 1, 0, 4, etc. show that our model is working quite well.
+
+Of course, running for more epochs could improve accuracy even further.
+
+And that’s it! We have successfully implemented LeNet-5 from scratch in PyTorch. Although it took a bit more code than Keras, PyTorch gives us fine-grained control and flexibility, making it an excellent choice for research and experimentation.
