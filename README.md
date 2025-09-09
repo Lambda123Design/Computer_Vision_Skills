@@ -122,6 +122,12 @@ pip install ipykernel
 
 **D) LeNet with Pytorch**
 
+**E) AlexNet Architecture**
+
+**F) AlexNet with Keras**
+
+**G) AlexNet with Pytorch**
+
 ### (I) Computer Vision (Open CV With Python)
 
 ### **A) Reading and Writing Images:**
@@ -3352,3 +3358,305 @@ We then visualize a few samples from the test set and see their predictions. For
 Of course, running for more epochs could improve accuracy even further.
 
 And that’s it! We have successfully implemented LeNet-5 from scratch in PyTorch. Although it took a bit more code than Keras, PyTorch gives us fine-grained control and flexibility, making it an excellent choice for research and experimentation.
+
+**E) AlexNet Architecture**
+
+Hello everyone, and welcome to this session on AlexNet – one of the most iconic CNN architectures.
+
+In this video, we’ll take a deep dive into the architecture of AlexNet. Let’s get started.
+
+AlexNet is a deep convolutional neural network (CNN) that made history by winning the ImageNet competition in 2012. It was designed by Alex Krizhevsky, Ilya Sutskever, and Geoffrey Hinton, and it demonstrated the true power of deep learning for image classification. This paper was truly game-changing in the field of computer vision.
+
+Before AlexNet, models used to struggle with higher error rates. In fact, the top-5 error rate before 2012 was around 25.8%, but AlexNet brought it down drastically to 16.4% – a huge improvement at the time. That’s why it became such a milestone in AI.
+
+Now, let’s go into the architecture itself.
+
+AlexNet consists of 8 layers in total. Out of these, 5 layers are convolutional layers, and the remaining 3 are fully connected (dense) layers. Along with these, AlexNet introduced some important innovations:
+
+The ReLU activation function, which replaced the slower sigmoid and tanh activations used earlier.
+
+Local Response Normalization (LRN), a new type of normalization layer added at that time.
+
+Dropout, a regularization technique to prevent overfitting.
+
+And, of course, Max Pooling, which was already common by then.
+
+Now, let’s carefully walk through the 8-layer architecture step by step.
+
+The input image size for AlexNet is 227 x 227 x 3, where 3 represents the RGB color channels. So, the model expects RGB images of shape 227 × 227 × 3.
+
+The first operation is a convolutional layer. Here, the filter size is 11 × 11, which is quite large compared to modern CNNs. AlexNet applies 96 filters, with a stride of 4. Because of the large stride, the spatial resolution drops quickly – the output feature map reduces from 227 × 227 × 3 to 55 × 55 × 96.
+
+After this, a Max Pooling layer is applied with a 3 × 3 window. This reduces the feature map further to 27 × 27 × 96. Right after pooling, AlexNet applies Local Response Normalization (LRN) to normalize activations.
+
+Next comes the second convolutional layer. This time, AlexNet uses filters of size 5 × 5, with padding = 2 to preserve the spatial dimensions. Here, the output remains at 27 × 27, but the depth increases because more filters are used. After this convolution, another Max Pooling layer is applied, again with a 3 × 3 window, which reduces the resolution to 13 × 13 × 256.
+
+Now, the architecture gets deeper. Three convolutional layers are stacked one after another:
+
+The third convolution uses 384 filters of size 3 × 3.
+
+The fourth convolution again uses 384 filters of size 3 × 3.
+
+The fifth convolution uses 256 filters of size 3 × 3.
+
+To maintain the 13 × 13 resolution across these convolutions, padding = 1 is applied. Finally, another Max Pooling layer with a 3 × 3 window reduces the feature map to 6 × 6 × 256.
+
+At this stage, the convolutional layers are done. The feature maps are flattened into a single vector and passed into fully connected (dense) layers. AlexNet uses two fully connected layers with 4096 neurons each, followed by dropout (50%) to reduce overfitting. Finally, the output layer is a fully connected layer with 1000 neurons, because the ImageNet dataset has 1000 different classes. This output layer uses softmax activation to generate class probabilities.
+
+So, to summarize:
+
+5 convolutional layers
+
+3 fully connected layers
+
+3 max pooling layers
+
+2 dropout layers
+
+1 softmax output layer
+
+Now, let’s quickly touch on the Local Response Normalization (LRN). At the time, it was introduced to help the network generalize better and improve training speed by normalizing activations across feature maps. However, over time, researchers found that Batch Normalization performs much better, and LRN has now become obsolete. Still, it was a useful step in CNN evolution.
+
+Similarly, the ReLU activation function played a big role in solving the vanishing gradient problem, allowing AlexNet to train much faster compared to tanh or sigmoid. The dropout layers ensured that the model didn’t overfit on training data, which was crucial given the large number of parameters (around 60 million in AlexNet!).
+
+To conclude, AlexNet was the first deep CNN that truly revolutionized computer vision, bringing down error rates drastically and proving that deep learning could outperform traditional methods in large-scale image classification.
+
+In the next session, we’ll look at the implementation of AlexNet in Keras and PyTorch, where we’ll see how to translate this architecture into code.
+
+**F) AlexNet with Keras**
+
+Hello everyone,
+Welcome to the lecture on AlexNet implementation in Keras.
+
+In the previous session, we already went through the theory of AlexNet — its layers, how it was built, and why it became so influential. Now in this session, we are going to implement the AlexNet architecture practically, using a custom dataset in Google Colab with Keras.
+
+Step 1: Mounting Google Drive
+
+Since we are working in Colab, the first thing we need to do is mount our Google Drive where the dataset is stored. So, I’ll execute the following command:
+
+"from google.colab import drive drive.mount('/content/drive')"
+
+This will connect my Drive to the Colab runtime. You might get a link and need to authorize access. Once mounted, you’ll see a message saying “Drive mounted successfully.”
+
+Step 2: Dataset Setup
+
+For this implementation, I’ve kept my dataset inside Google Drive. The dataset is a simple flower dataset with two classes — daisy and dandelion.
+
+The dataset was originally a ZIP file. If you’re doing this for the first time, you’ll need to unzip it:
+
+"!unzip /content/drive/MyDrive/data.zip -d /content/data"
+
+In my case, I’ve already unzipped it, so the folders train and test are ready.
+
+The dataset looks like this:
+
+train/daisy → all daisy images
+
+train/dandelion → all dandelion images
+
+test/daisy → test images of daisy
+
+test/dandelion → test images of dandelion
+
+So, this is a binary classification problem.
+
+Step 3: Importing Required Libraries
+
+Now, let’s import all the necessary libraries.
+
+"import tensorflow as tf from tensorflow.keras.models import Sequential from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization from tensorflow.keras.preprocessing.image import ImageDataGenerator import matplotlib.pyplot as plt"
+
+Here, Sequential will help us build the AlexNet model layer by layer. We’re also importing convolution layers, max pooling, dropout, flatten, dense, and batch normalization.
+
+Note: Instead of Local Response Normalization (used in the original AlexNet), we’ll be using Batch Normalization because LRN is deprecated and BatchNorm performs much better.
+
+Step 4: Data Augmentation
+
+Next, we prepare data augmentation to make our model more robust.
+
+For the training set, we’ll apply rescaling, rotation, width and height shifts, shear, zoom, and horizontal flips.
+
+"train_datagen = ImageDataGenerator( rescale=1./255, rotation_range=20, width_shift_range=0.2, height_shift_range=0.2, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)"
+
+For the test set, we only apply rescaling (no augmentation).
+
+"test_datagen = ImageDataGenerator(rescale=1./255)"
+
+Step 5: Flow from Directory
+
+Now, we’ll use the flow_from_directory method to load images from our train and test folders.
+
+`"train_generator = train_datagen.flow_from_directory(
+'/content/data/train',
+target_size=(150,150),
+batch_size=32,
+class_mode='categorical')"
+
+"test_generator = test_datagen.flow_from_directory( '/content/data/test', target_size=(150,150), batch_size=32, class_mode='categorical')"
+
+This means each image will be resized to 150x150 with 3 channels (RGB). Our batch size is 32. Since we’re doing classification, the class mode is categorical.
+
+When I run this, it shows something like:
+
+Training images: 1275
+
+Testing images: 182
+
+Step 6: Building AlexNet Architecture
+
+Now comes the most important part — building AlexNet in Keras.
+
+We’ll start with a Sequential model:
+
+"model = Sequential()"
+
+Layer 1: Convolution + BatchNorm + MaxPooling
+
+Conv2D with 96 filters, kernel size 11x11, stride of 4, activation ReLU.
+
+Input shape = (150,150,3).
+
+Output shape after Conv = (35,35,96).
+
+"model.add(Conv2D(96, (11,11), strides=4, activation='relu', input_shape=(150,150,3))) model.add(BatchNormalization()) model.add(MaxPooling2D(pool_size=(3,3), strides=2))"
+
+Layer 2: Convolution + BatchNorm + MaxPooling
+
+Conv2D with 256 filters, kernel size 5x5, padding same.
+
+Output shape = (17,17,256).
+
+"model.add(Conv2D(256, (5,5), padding='same', activation='relu')) model.add(BatchNormalization()) model.add(MaxPooling2D(pool_size=(3,3), strides=2))"
+
+Layers 3, 4, 5: Consecutive Convolutions
+
+Conv3: 384 filters, kernel 3x3 → Output = (17,17,384).
+
+Conv4: 384 filters, kernel 3x3 → Output = (17,17,384).
+
+Conv5: 256 filters, kernel 3x3 → Output = (17,17,256).
+
+"model.add(Conv2D(384, (3,3), padding='same', activation='relu')) model.add(Conv2D(384, (3,3), padding='same', activation='relu')) model.add(Conv2D(256, (3,3), padding='same', activation='relu')) model.add(MaxPooling2D(pool_size=(3,3), strides=2))"
+
+Final output after these = (8,8,256).
+
+Fully Connected Layers
+
+Now we flatten the features:
+
+"model.add(Flatten())"
+
+Dense layers with Dropout:
+
+FC1: 4096 neurons + ReLU + Dropout(0.5).
+
+FC2: 4096 neurons + ReLU + Dropout(0.5).
+
+Output layer: 2 neurons (since 2 classes) + Softmax.
+
+"model.add(Dense(4096, activation='relu')) model.add(Dropout(0.5)) model.add(Dense(4096, activation='relu')) model.add(Dropout(0.5)) model.add(Dense(2, activation='softmax'))"
+
+Step 7: Model Summary
+
+Now, let’s check the model summary.
+
+"model.summary()"
+
+This prints all the layers with their output shapes and parameter counts. For example:
+
+After Conv1 → (35,35,96)
+
+After Pool1 → (17,17,96)
+
+After Conv2 → (17,17,256)
+
+After Pool2 → (8,8,256)
+
+After Flatten → 16384
+
+Dense1 → 4096
+
+Dense2 → 4096
+
+Output → 2
+
+We can also see the total trainable parameters (in millions).
+
+Step 8: Compile and Train the Model
+
+Now, let’s compile the model with Adam optimizer and categorical cross-entropy loss.
+
+"model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])"
+
+Now we fit the model:
+
+"history = model.fit(train_generator, epochs=2, validation_data=test_generator)"
+
+Here I’ve used only 2 epochs for demonstration. The training logs will show loss and accuracy per epoch.
+
+Step 9: Evaluate the Model
+
+Once trained, let’s evaluate on the test set.
+
+"loss, acc = model.evaluate(test_generator) print(f'Test Accuracy: {acc*100:.2f}%')"
+
+In my run, accuracy was around 60%. Not great because of just 2 epochs, but with 20–30 epochs, it will improve a lot.
+
+Step 10: Save the Model
+
+To save the trained model:
+
+"model.save('/content/drive/MyDrive/alexnet_custom.h5')"
+
+Now the model is stored in Google Drive for reuse.
+
+Step 11: Visualize Training Results
+
+We can also visualize accuracy and loss curves:
+
+"plt.plot(history.history['accuracy'], label='train acc') plt.plot(history.history['val_accuracy'], label='val acc') plt.legend() plt.show()"
+
+Similarly, for loss.
+
+Step 12: Predictions on New Images
+
+Finally, let’s test our model on a single image.
+
+We define a function:
+
+`"import numpy as np
+from tensorflow.keras.preprocessing import image
+
+def predict_image(model, img_path, class_names):
+img = image.load_img(img_path, target_size=(150,150))
+img_array = image.img_to_array(img) / 255.0
+img_array = np.expand_dims(img_array, axis=0)
+prediction = model.predict(img_array)
+class_index = np.argmax(prediction)
+return class_names[class_index]"`
+
+Now we test:
+
+"classes = ['daisy', 'dandelion'] print(predict_image(model, '/content/data/test/dandelion/123.jpg', classes))"
+
+It correctly predicted dandelion.
+
+**G) AlexNet with Pytorch**
+
+Welcome to the video of AlexNet implementation in PyTorch. So in the last one we have done it in Keras. This time we'll be doing it in PyTorch. Okay so let's get started. So the first thing is basically setting up the uh project directory. Okay. So right now we are using the same data set that we have used last time. Okay. Uh, so I have just, uh, uh, given the path to the, uh, data set right now. Okay. Then just printing out the current present working directory now in the next step. So I am importing, uh, so "import torch". I'm importing the neural network module from torch. I'm importing the optimizers to apply different type of transformations on top of images. I am using torch vision and I am importing the transforms. And finally comes our data loader because I'll be loading a custom data set right now. Okay. And then finally comes for plotting, I'll be using matplotlib. Okay, so pretty much the basic imports, right?
+
+Now let's come to the part of transformations. So uh, at any point of time okay you have to perform image data augmentation okay. So similarly in Keras you have the image data generator class. So similarly here using "transform.compose" we can chain multiple type of image transformations together. Okay. So we are applying a resize operation. So uh originally it was 150 cross. One. 50 cross three the resolution. But here we are just resizing it to 2 to 4. Cross 2 to 4. Cross three. Okay then coming and converting it into a tensor. And finally applying normalization based on the values that I have. Okay. So now these values actually represent the mean pixel intensity of the ImageNet dataset. You have to understand like this is not very specifically calculated. I am using uh for the data set. Okay. Like the ImageNet one which is open source and the data is available. Okay. And most of the times it works because we are working with generic classes right now. Okay. So let me perform the image transformation. Then I am passing the path to the data set. So using "torchvision.datasets.imagefolder" I have passed the data set path and I am adding those transformations okay which will be applied on top of the data set. Now let's create the data loaders. So using the data loaders will be actually loading the data okay to the GPU to start our training process okay. And here some basic information if you want to get with respect to the data set okay. So it will give you just a simple data set info. Right now the total number of samples that you have. And then coming to the batch size, the shape, the unique classes, total classes. So all these things. So I have actually used it for the uh train loader right now. You can similarly do it for the test also. So you will see that total number of classes. So all this information with respect to data set that you can easily track.
+
+Now the next part is the most important part which is basically the model training. Okay. So right now with respect to model training when I'm talking about. So here we have just kept the basic work okay. So what are the things that needs to be passed. We have only kept them. So as you can see "def train" and number of epochs. So if I just try to do this particular function. So majorly everything is available here. So right now the number of epochs. Okay. So simply like uh here by default n is equal to ten. But you can change this I will go with lesser number because I'm working with a data set of more than 1000 images. So it will take some time. Okay. Then coming to uh, creating some blank list. The idea is to track the loss and the accuracy. Okay. And then "for epoch in range", the number of epochs okay. So "model.train" I am actually switching on the training mode right now. And then I will start. So the running loss the correct and the total. So initially I have initialized all of those black values as zero later on, which will be updated during the training process. Okay, now coming to the next part. So "for images and labels". So right now the idea is that I'll be iterating over the train set using the train loader okay. Which provides a batch of images okay. With the labels okay. So for example, if I'm talking about an image of a cat with that, the label is basically the cat okay. So the idea is to iterate over that. Then comes like moving the images and the labels to the available training device, like whether CPU is available or GPU is available, then coming like "optimizer.zero_grad", which clears the gradients from the previous step to prevent accumulation. Okay. Then the next step is like "output = model(images)" okay. So when I'm doing this "output = model(images)" okay. It feeds the images into the model to get the predictions okay. And finally using our loss function which is the criterion one okay. And finally we are passing our output and labels, then implementing our backward propagation using "loss.backward" and finally computing the gradients for each parameter in the model. Okay. And finally update the model weights using "optimizer.step". Okay. So this is the one which is responsible for it. Okay.
+
+Now coming to the next part. So after we have applied it so we will be updating our loss. Okay. So using "running_loss = running_loss + loss.item()" that we have implemented. Okay. And then finally finding out the class with the highest score for each image in the batch. Okay. So because of that like "predicted = output.max" that we have given okay. And finally incrementing the total number of samples in the batch. So this uh will actually help you to keep track of how many images are basically processed. Okay. And finally and finally moving into like, uh, getting the correct. So "correct = correct + predicted.eq(labels)" So now what will happen. So "eq(labels)" compares the predicted levels with the actual levels okay. And it will return basically a boolean type of tensor okay. And finally ".sum().item()" it will convert into an integer count okay. And finally updating the epoch loss. Okay. So "epoch_loss = running_loss / len(trainloader)" okay. So it will actually compute the average loss for the epoch okay. By dividing the total loss by the number of batches. Okay. And finally getting our uh, I will say the accuracy okay. So "100 * correct / total" that we have implemented here okay. And so this is basically the implementation of the training. Now this particular function I will call directly okay. So right now the initially the training will not start okay. But I will be calling all the functions at once okay.
+
+Now coming to the next part with respect to the AlexNet architecture okay. So here you can see a very similar implementation that we have done. So right now two things, uh, are available inside this AlexNet class. So right now we know the number of classes that we have is two. We are inheriting the properties of the "nn.Module" here right now. And then two parts of "self.features". So this is basically the convolutional block which is responsible for feature extraction. So you will see here no classifier modules like dense layers and softmax. Those things I haven't kept. It's pretty much convolution operation that we have kept it. Okay. And then coming to the next step okay. So which is basically the implementation of the classifier. So here we have kept convolution with respect to ReLU. Then comes max pooling. So very similar implementation. You can see repeated blocks. But here we have actually increased the number of filters okay. And right now if you look into the kernel size. So sometimes like our initial implementation we have kept it in five but this time with other like three cross three and three cross three implementations also that you can see. So because these are hyper parameters Simply, you can play with them and you can change them. Now coming to the next part. Okay. So even you can add batch normalization also here like if you want it because uh LR implementation is directly not available. You have to create a custom layer and then implement it. Okay. Now coming to the classifier part. So whatever the output will come it will go here. Okay. And then implementing our linear layers as you can see. Okay then uh ReLU with dropout. And finally this is my last one. Okay. So here you can see the number of classes that I have passed. Okay. So now coming to our implementation of the forward propagation. So in our forward propagation what we have. So first we are passing the "self.features" okay. So where basically x is basically the input. Then we are performing a flattening operation. And then we have implemented the classifier. Okay. And finally we are returning the x. So uh let's execute this one. Okay. So right now this is just the model architecture. But I'll be calling it at a later point.
+
+So here uh, then comes defining your, uh, model. Loss functions and optimizers. So we have selected the device Cuda because it is available. Right now I'm using a T for GPU. Then I am calling the model with the number of classes two device. Okay. I am setting up my loss function. I have set up my optimizer okay. With, uh, our model parameters and then coming to our learning rate. Okay. So let me execute this part also. Then the next part is basically the model evaluation right now okay. So the idea is once you have done the training the idea is to evaluate it. So based on that we have this particular evaluation function. A very similar implementation just like training okay. But uh the idea is that you look into the test loader right now for evaluation. Okay. And based on that we are getting the outputs. And finally we are updating our evaluation. So this particular implementation is very very similar to our training loop that we have done. So let me execute the evaluation part. Okay.
+
+Now, uh, model inferencing, I have kept it because the idea is that once the model is ready, you will be able to, uh, uh, do predictions on top of a custom image. Okay. So we are importing like "from PIL import Image". Okay. Now the next thing is "Image.open". You can pass any image path here a custom path okay. Then you can see "unsqueeze" to device. So the idea is basically to add one more dimension. And then you will pass it to the your available GPU or CPU. And finally switching on the "model.eval()" mode. So here also "with torch.no_grad". And finally looking into our prediction. Okay so our inferencing function is also ready. So here you can use OpenCV PIL any other libraries for on loading. Okay. And finally printing out our loss and accuracy okay. So this is the function.
+
+Now uh I will basically start the training. Okay. So it will take some time. So uh, just wait because right now though I have passed the "number of epochs = 2". Okay. They were like. Working with a bigger data set will take some time. So let's wait. Okay, so as you can see, the training has started. Okay. So probably it will take around 5 to 10 minutes. So let's wait for the training to be completed. Alright guys. So we can see that the training has completed. Okay so right now the model evaluation process is going on. Okay. So if you try to compare okay so based on this, so uh, the accuracy that I have and based on the test accuracy it's 71.98. Okay. So somehow I feel that PyTorch is better performing right now. Okay. So as compared to Keras in this particular condition. Okay. So the training loss. Yes it's going down the training accuracy. This is also increasing. So the idea is that you need to go with higher number of uh epochs to get better results. Okay.
+
+So now let's try to do the prediction using the model that we have trained. Okay. So uh right now so we have two classes zero and one. Okay. So the first one that we have taken. So let me execute. Okay. So this is the zero. So as you can see. So this is basically a dandelion image. And one stands basically for dandelion here okay. And uh the next one is basically the daisy. So for Daisy it's zero okay. So these are basically the class representations. And I can see that yes it is performing good. But yes we need to train and go higher on this I hope guys. So this part is clear. Okay so see you in the next video.
