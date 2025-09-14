@@ -154,6 +154,26 @@ pip install ipykernel
 
 **T) Resnet Transfer Learning**
 
+### (V) Data Augmentation
+
+**A) What is Data Augmentation**
+
+**B) Data Augmentation with Albumentations**
+
+**C) Data Augmentation with Imgaug**
+
+### (VI) Basics of Object Detection
+
+**A) What is Object Detection?**
+
+**B) Object Detection Metrics**
+
+**C) What are Bounding Boxes?**
+
+**D) Getting started with YOLO**
+
+**E) Getting started with Detectron2**
+
 ### (I) Computer Vision (Open CV With Python)
 
 ### **A) Reading and Writing Images:**
@@ -3952,3 +3972,220 @@ Finally, visualization. We can fetch a batch from the validation loader, move th
 The training took a while — around 2500 seconds for 5 epochs. The validation loss reached ~0.2 and accuracy was close to 90%. With more epochs, accuracy can improve further. Some misclassifications still exist, e.g., a mango predicted as apple, but overall results are quite good. Testing with random images like banana and strawberry also showed correct predictions.
 
 So, this completes our transfer learning with ResNet50 in PyTorch. We’ve seen dataset preparation, model modification, training, evaluation, inference, and visualization. By now, you should have a strong understanding of image classification with pre-trained models and transfer learning. Between Keras and PyTorch, I find PyTorch to be more flexible and powerful, so I recommend practicing more with PyTorch.
+
+### (V) Data Augmentation
+
+**A) What is Data Augmentation**
+
+Hello everyone, welcome to this lecture on Data Augmentation.
+
+First, what is data augmentation? It is a technique used in computer vision to artificially expand a dataset by applying various transformations to the existing images. For example, suppose you only have ten images. Normally, working with such a small dataset makes it impossible to train a good deep learning model. But with augmentation, we can expand those ten images into one hundred images by applying transformations. In short, data augmentation allows us to artificially increase the dataset size by making variations of the same images.
+
+To visualize this, consider one original image. On top of it, we apply transformations, and each variation looks slightly different while still representing the same object. These become our augmented images. Since working with small datasets is a common problem, augmentation helps create more examples, making the model stronger and more reliable.
+
+The main advantage of this approach is that it improves the generalization capability of deep learning models. By training the network on variations of the images, the model learns to adapt to small changes. So, when it encounters new real-world data, which may not look exactly like the training set, it still performs well. In practice, this makes models more robust and reduces the risk of failure.
+
+Now, why do we use data augmentation? There are four key reasons. First, it helps overcome overfitting. Without augmentation, models may memorize the training data, leading to poor performance on unseen data. Augmentation introduces variations, forcing the model to generalize better. Second, it improves model robustness, since the network sees many transformations and learns invariance to them. Third, it is useful when you have limited data, as it allows us to synthetically increase dataset size. And fourth, it can lead to better performance, since exposure to variations often improves accuracy.
+
+Next, let’s discuss the types of data augmentation. The first category is geometric transformations. These include rotation "transforms.RandomRotation()", flipping "transforms.RandomHorizontalFlip()", and scaling. These operations change the shape or orientation of the image while preserving its meaning.
+
+The second category is color space transformations, where we modify image brightness, contrast, or saturation. For example, "transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2)". Such transformations prepare the model for varying lighting conditions.
+
+The third type is noise injection or blurring, where random noise or blur is added. Examples include Gaussian noise or motion blur, which can be applied using libraries like OpenCV or Albumentations.
+
+The fourth type is cutout and occlusion techniques. Here, parts of the image are hidden or replaced. Examples include Random Erasing, CutMix, and MixUp. These methods prevent the model from overly depending on a single region of the image.
+
+Finally, the fifth and more advanced type is generative augmentation, where methods like GANs or diffusion models create entirely new synthetic images. While powerful, this approach is less commonly used in practice compared to geometric or color-based transformations.
+
+Now, moving on to the frameworks for data augmentation. The most common one is OpenCV, which supports a wide range of transformations. Then comes Keras, where the "ImageDataGenerator" class can apply augmentations during training. In PyTorch, we use TorchVision transforms, for example "transforms.RandomHorizontalFlip()". Apart from these, two specialized libraries exist: Albumentations and imgaug. Out of these, Albumentations is considered one of the best, as it is modern, powerful, and designed specifically for augmentation.
+
+In practice, OpenCV, Keras, and TorchVision are often used for general purposes, but for more advanced augmentation pipelines, Albumentations is my first choice. It can easily take one image and generate multiple variations. Imgaug is also available, but it is relatively older. In the coming practical session, we will explore both Albumentations and Imgaug in detail and see how to generate augmented samples.
+
+So, to summarize: data augmentation helps overcome overfitting, improves robustness, allows us to work with limited data, and enhances performance. We explored its main types — geometric, color space, noise injection, cutout/occlusion, and generative augmentation. We also reviewed the main frameworks — OpenCV, Keras, TorchVision, Albumentations, and Imgaug.
+
+In the next lecture, we’ll move into the practical implementation of data augmentation, where we’ll apply these transformations and generate multiple images from a single sample. See you there!
+
+**B) Data Augmentation with Albumentations**
+
+Hello everyone, welcome to this video on the implementation of data augmentation using Albumentations.
+
+I have opened the official Albumentations website, albumentations.ai, where you can see that it supports multiple types of image transformations. Now let’s move to the notebook that I created for this demonstration. I will be working with a small dataset of only six images, just to show you the implementation.
+
+First, let us import all the necessary libraries. I use OpenCV to read images, so "import cv2". Then, we bring in Albumentations with "import albumentations as A". Since we may later convert images into tensors, we also import "from albumentations.pytorch import ToTensorV2". In addition, I import "numpy", "tqdm" for progress bars, "matplotlib.pyplot", and "random".
+
+To visualize the images, I created a simple helper function that sets the figure size using "plt.figure(figsize=(5,5))" and displays the image. I stored my dataset in Google Drive, so I mounted the drive, read an image with "cv2.imread()", and converted it from BGR to RGB using "cv2.cvtColor(img, cv2.COLOR_BGR2RGB)". This ensures the colors display correctly, since OpenCV defaults to BGR. At this point, we have the original image ready.
+
+Now let’s start applying some transformations. The first transformation I used is a horizontal flip: "A.HorizontalFlip(p=0.5)". The probability parameter p=0.5 means that out of ten images, the flip will be applied roughly to five. Each time you run it, the output may vary due to randomness. As expected, we see the flipped version of the image.
+
+Next, I tried the Shift, Scale, Rotate transformation using "A.ShiftScaleRotate(p=1.0)". This slightly shifts and rotates the image, sometimes leaving black areas in the background due to the shift. Then, I moved on to creating a pipeline of multiple transformations together. For example, I defined "A.Compose([A.Transpose(), A.RandomRotate90(), A.Blur(), A.GridDistortion()])". When applied, this pipeline randomly executes these operations, producing a blurry or rotated image with grid distortions. Each run generates different results because of randomness.
+
+Similarly, I experimented with noise injection and blurring. For example, "A.MotionBlur(p=0.5)" or "A.MedianBlur(blur_limit=3, p=0.5)" introduces variations into the image. Each time you execute, a slightly different noisy or blurred version is generated.
+
+So far, we have applied transformations to a single image. Now, let’s scale this up to a dataset. I had a folder containing six images, and I wanted to increase them to sixty or ninety using augmentation. For this, I wrote a function called "augment_images(input_folder, output_folder, num_augmented_images=10)". Inside, I first create the output folder if it does not exist using "os.makedirs(output_folder, exist_ok=True)". Then, I loop through all image files with extensions like .png, .jpg, or .jpeg. For each image, I read it using "cv2.imread()", apply the transformations with "augmentor(image=image)", and finally save the augmented output using "cv2.imwrite()".
+
+The transformation pipeline I defined included basic operations like "A.HorizontalFlip()", "A.RandomBrightnessContrast()", and "A.ShiftScaleRotate()". When I ran this augmentation function with num_augmented_images=10, the script saved the results into a new folder called augmented_images. Inside this folder, I could see multiple new versions of each original image, each with different transformations applied.
+
+I also tried adding "A.ColorJitter()" to the pipeline, which changes brightness, contrast, and saturation. After adding this, when I checked the augmented folder, I saw more varied outputs with color changes as well.
+
+One important note is that you should carefully choose transformations based on your dataset. For example, if you rotate a digit 6, it may look like a 9, which could confuse the model. So always analyze your data and apply only the transformations that make sense for your problem.
+
+In summary, with Albumentations, we can create a pipeline of transformations using "A.Compose()", apply them to single images or entire datasets, and save the augmented results. This makes it very powerful for expanding datasets and improving model robustness.
+
+That’s all for the Albumentations implementation. In the next lecture, we will explore data augmentation using ImgAug.
+
+**C) Data Augmentation with Imgaug**
+
+Hello everyone, welcome to this lecture on ImgAug.
+
+Here we will be using ImgAug for data augmentation. This library is available on GitHub, where you can see multiple types of transformations that can be performed. Although the repository is a bit old and much of the code has not been updated for the last five or six years, the project has been widely used in the past and has received many stars. I will show you the basic usage so that you can still use it in your pipeline if required.
+
+The first step is importing ImgAug with "import imgaug.augmenters as iaa". This is the main module responsible for augmentation. I also have a small sample dataset of six images stored in a folder called sample_images. We will use these images for testing and visualization.
+
+Next, I created a small helper function to visualize results. The idea is to read an image using "cv2.imread()", convert it to RGB with "cv2.cvtColor(img, cv2.COLOR_BGR2RGB)", and then apply different transformations on the same image. For example, I included operations like flip, rotation, blur, brightness adjustment, noise injection, cropping, and grayscale conversion. Using Matplotlib, I plotted these variations side by side so we can clearly see how each transformation affects the original image. The results show the original, flipped, rotated, blurred, grayscale, cropped, and noisy versions of the same image.
+
+After visualization, the next requirement was to apply these transformations on an entire folder of images and save the augmented results into an output directory. For this, I wrote a function "def augment_images(input_folder, output_folder, num_augmented_images=100)". Inside this function, I first check if the output directory exists and create it using "os.makedirs(output_folder, exist_ok=True)". Then I load each image, convert it from BGR to RGB, and apply a set of augmentations.
+
+The augmentation pipeline was defined using ImgAug’s sequential API: "iaa.Sequential([iaa.Fliplr(0.5), iaa.Affine(rotate=(-25,25)), iaa.GaussianBlur(sigma=(0,3.0)), iaa.Multiply((0.8,1.2)), iaa.Crop(percent=(0,0.1))])". Each augmentation has a probability, such as "iaa.Fliplr(0.5)" which flips the image horizontally with 50% probability. Similarly, "iaa.Affine(rotate=(-25,25))" randomly rotates the image between -25 and +25 degrees. "iaa.GaussianBlur()" applies blur, "iaa.Multiply()" adjusts brightness, and "iaa.Crop()" randomly crops the image.
+
+Once an image is augmented, it is saved back to the output directory using "cv2.imwrite()". Finally, I called the function with parameters like input_folder='sample_images', output_folder='augmented_images', and num_augmented_images=100.
+
+When executed, the script generated new augmented images. For example, in my case, I had six original images in the folder and after running the augmentation function, the output folder contained an additional 94 generated images, making the total 100. On opening the output folder, I could see the different variations such as rotated, cropped, blurred, or brightness-adjusted versions.
+
+This was a simple but effective implementation of ImgAug. Even though the library is not actively maintained, it still works for basic use cases. The key takeaway is that whenever you are working with a small dataset, applying data augmentation — whether using ImgAug or Albumentations — can help you expand the dataset and make your model more generalized. Even with a large dataset, augmenting around 10% of the data can improve robustness.
+
+I hope by now the idea of data augmentation with ImgAug is clear. In the next lecture, we will continue with further augmentation techniques.
+
+### (VI) Basics of Object Detection
+
+**A) What is Object Detection?**
+
+Hello everyone, welcome to the lecture on Object Detection.
+
+We are starting the object detection module, so let’s first understand what object detection is and how it differs from image classification. Object detection is a computer vision task that involves identifying and locating multiple objects within an image or a video. Since a video is basically a sequence of images, object detection can be applied both on static images and on individual video frames. Unlike image classification, which only assigns a label to an image, object detection provides additional spatial information by drawing bounding boxes around detected objects.
+
+Now, what is a bounding box? If you look at an image with multiple objects, say cars, bicycles, and traffic lights, each object will be enclosed within a rectangular box. This rectangle is referred to as the bounding box. Every object in the image has its own bounding box, and the idea is that the object should lie entirely within this box. For example, a car will have one bounding box, a bicycle another, and so on.
+
+This brings us to the key difference between classification and detection. In image classification, the question is simply “What is the object?”, whereas in object detection the question is both “What is the object?” and “Where is the object?”. So detection not only predicts the class but also its location within the image.
+
+In object detection, three things are very important: the input, the output, and the bounding box. Let’s start with the input. The input can be a single image, a frame from a video, or even a batch of images. The output, on the other hand, consists of three components: the bounding box coordinates, the class labels, and the confidence scores. The bounding box gives the location of the object, the class label specifies what the object is, and the confidence score (a probability between 0 and 1) indicates how confident the model is in its prediction.
+
+Now let’s focus on bounding boxes in more detail. Suppose we have an image with a single object, say a person. The person will be enclosed inside a rectangle, which is our bounding box. This bounding box is defined by four coordinates: xmin and ymin for the top-left corner, and xmax and ymax for the bottom-right corner. With just these two points, you can draw a rectangle around the object. During training, we provide these coordinates along with the object class so that the network can learn. During prediction, the model outputs similar coordinates, which we use to reconstruct the bounding boxes around detected objects.
+
+To summarize so far: object detection is about finding both the object class and its location. The input is an image, video frame, or batch of images. The output consists of bounding boxes, class labels, and confidence scores.
+
+Now let’s talk about training data. In an image classification task, the training data only consists of images and their labels. For object detection, however, we need images and bounding box annotations. So the labels here must include two pieces of information: the class label and the bounding box coordinates. Together, these form the annotation files.
+
+Annotation files are crucial for training object detection models. They provide both the object category and the location in the image. There are multiple data annotation tools available for creating these files, such as Labelbox, Roboflow, Supervise.ly, and others. In this lecture, I will demonstrate a simple example using an online tool called MakeSense.
+
+MakeSense is a free, open-source, browser-based tool, which means no advanced installation is required. You just open it in your browser, click Get Started, and upload your images. For example, I uploaded a zebra image. After uploading, I selected the Object Detection option. If you don’t already have labels defined, you can create them manually. For instance, I created a label called snake. Once the label is created, you can draw bounding boxes directly on the image by clicking and dragging over the object. Then you assign the box to the correct label, in this case snake. If the image contains multiple objects, you repeat this process for each object.
+
+After annotation, you can export the results. MakeSense supports multiple export formats such as YOLO, Pascal VOC, and CSV. I selected YOLO format first. The exported file is a ZIP containing text files where each line corresponds to an object. The line contains the class index (starting from 0) and the bounding box coordinates in YOLO’s specific normalized format. For example, 0 may correspond to “snake,” and if there was another class like “person,” it would be indexed as 1.
+
+Similarly, if you choose Pascal VOC format, the annotations are exported as XML files. In these XMLs, you can see detailed information such as the folder name, image name, image size (width, height, depth), and the bounding box coordinates (xmin, ymin, xmax, ymax). This format is widely used and is more human-readable than YOLO format. During training, the network uses this information to learn the object categories and their locations, enabling better feature extraction and learning patterns in the data.
+
+So to recap, in an object detection pipeline the training data consists of images and annotation files. The annotation files contain both the class labels and bounding box coordinates. Tools like MakeSense, Labelbox, Roboflow, and others can be used to generate these annotations.
+
+**B) Object Detection Metrics**
+
+Hello everyone, welcome to the lecture on Object Detection Metrics.
+
+In this session, we will be discussing the metrics that are widely used in object detection. To make this clear, I have referred to a GitHub repository that provides some excellent examples, and we will walk through it step by step. Along the way, we will explore different approaches for calculating these metrics and understand their significance.
+
+First, a quick recap: annotation files can come in different formats such as XML, JSON, or TXT. We have already seen how annotations work in earlier lectures. Now, let’s move toward the competitions that shaped the evaluation standards in object detection. One of the earliest and most famous is the Pascal VOC dataset, which has versions like Pascal VOC 2007 and 2012. It is one of the oldest and widely used benchmarks. Then comes the COCO detection challenge, which is currently the most widely adopted dataset. Most modern object detection models are pre-trained on the COCO dataset, which contains about 80 object classes. Other competitions include Google Open Images and the ImageNet Localization Challenge. These competitions set the foundation for evaluation practices in object detection.
+
+Now let’s move to some important definitions. The first key concept is Intersection over Union (IoU). IoU is based on the Jaccard Index and measures the overlap between two bounding boxes. You always need two boxes: the ground truth box (BGT) and the predicted box. The ground truth is the actual annotation, and the predicted box comes from the model’s output. The IoU is given by the formula "IoU = Area of Intersection / Area of Union". A higher IoU indicates that the predicted bounding box closely matches the ground truth. IoU is central to determining whether a detection is valid (true positive) or invalid (false positive).
+
+From IoU, we move to the concepts of True Positive (TP), False Positive (FP), False Negative (FN), and True Negative (TN). A true positive occurs when the model correctly detects an object with IoU greater than a chosen threshold. The threshold is a hyperparameter, often set to values like 0.5, 0.75, or 0.95 depending on the use case. For example, in medical imaging where errors can be critical, a higher threshold is used. A false positive occurs when a predicted bounding box has IoU less than the threshold. A false negative occurs when the ground truth object is not detected at all. As for true negative, it does not really apply in object detection, because there can be an infinite number of non-object bounding boxes, and we don’t measure missed “non-detections.” Thus, in practice, we only consider TP, FP, and FN.
+
+With these terms, we can define precision and recall. Precision is the ability of the model to identify only relevant objects. Its formula is "Precision = TP / (TP + FP)", where (TP + FP) represents all detections made by the model. Recall is the ability of the model to detect all relevant objects. Its formula is "Recall = TP / (TP + FN)", which is the proportion of correctly detected objects among all ground truth objects.
+
+Now let’s move to the Precision-Recall (PR) Curve. This curve plots precision against recall for different thresholds. For instance, the Pascal VOC 2012 challenge used PR curves as a metric. However, in practice, we rarely use raw PR curves directly today. Instead, we rely on Average Precision (AP), which summarizes the PR curve into a single number.
+
+There are two common methods to compute AP: the 11-point interpolation and the all-point interpolation. In 11-point interpolation, precision is averaged at 11 recall levels: "0.0, 0.1, 0.2, ..., 1.0". The formula looks like "AP = (1/11) * Σ max Precision at Recall ≥ r", where r takes each of the 11 recall levels. In the all-point interpolation method, instead of just 11 points, we compute the area under the entire PR curve. This method is more precise and is widely used today.
+
+To better understand this, let’s look at an example dataset with seven images containing 15 ground truth objects (green bounding boxes) and 24 predicted detections (red bounding boxes). Each predicted box has a confidence score and an ID like a, b, c. For instance, in image 1, we may have three detections a, b, and c with confidence scores of 88%, 70%, and 80%. Depending on their IoU with the ground truth boxes, they are marked as TP or FP. Suppose the threshold is set to 30% IoU: if a prediction overlaps more than 30% with a ground truth, it is a TP; otherwise, it is an FP.
+
+This information is organized into a table. Each row corresponds to a detection, showing the image ID, detection ID, confidence score, and whether it is TP or FP. To make analysis easier, we sort all detections by descending confidence scores. Then, we create cumulative columns for Actual TP and Actual FP. For example, the first detection might be a TP, so Actual TP = 1. If the next is also a TP, Actual TP = 2. If it is an FP, then Actual FP increases instead.
+
+Once we have cumulative TP and FP, we can calculate precision and recall row by row. For example, for one detection with "TP = 1" and "FP = 1", the precision is "1 / (1+1) = 0.5". If the total ground truths are 15, recall is "1 / 15 ≈ 0.066". These values are then used to plot the PR curve.
+
+Now let’s see how AP is calculated. In the 11-point interpolation, we take precision at 11 fixed recall levels and average them. Suppose we obtained values like 1.0, 0.66, 0.42, ..., we sum them and divide by 11 to get AP, say around 26.84% in this case. In the all-point interpolation, instead of just 11 points, we compute the area under the PR curve by summing rectangular or trapezoidal regions, such as "AP = A1 + A2 + A3 + A4". In the example, this method yields about 24.56%. Although the numbers differ slightly, the all-point interpolation is considered more accurate and is the preferred method today.
+
+Finally, when we calculate AP for each class in the dataset, we average them to get Mean Average Precision (mAP). This is the most widely used metric in object detection tasks. Most competitions and benchmarks such as COCO report mAP at different IoU thresholds, for example "mAP@0.5" or "mAP@[0.5:0.95]".
+
+So to summarize: in object detection metrics, the most important concepts are IoU, TP/FP/FN, precision, recall, the PR curve, and AP. We have two ways of computing AP: the older 11-point method and the modern all-point interpolation. For evaluating models, Average Precision and Mean Average Precision (mAP) are the standard metrics.
+
+That concludes our introduction to object detection metrics. In the next lecture, we will explore how mAP is extended across datasets and classes.
+
+**C) What are Bounding Boxes?**
+
+Hello everyone. Welcome to the lecture of Bounding Boxes. In this lecture, we will go in depth with respect to bounding box representation. A bounding box is simply a rectangular region in an image that encloses an object detected by an object detection model. For example, imagine three bounding boxes in an image: one around a dog, one around a car, and one around a bicycle. The bounding box helps in locating and identifying objects by providing their spatial coordinates. These coordinates are generally represented as either corner format or center format.
+
+In the corner format, you need four coordinates: x_min, y_min, x_max, and y_max. Here, (x_min, y_min) refers to the top-left corner of the rectangle, while (x_max, y_max) refers to the bottom-right corner. With these two points, we can easily draw a rectangle enclosing the object. For example, consider the coordinates "x_min, y_min, x_max, y_max = 50, 30, 200, 180". The top-left point will be (50, 30) and the bottom-right will be (200, 180). To draw this bounding box with OpenCV, you can write "cv2.rectangle(image, (50, 30), (200, 180), (255, 0, 0), 2)". This will draw a blue rectangle with thickness 2 around the detected object.
+
+Now let us look at the center format representation. Instead of corners, we use (x_center, y_center, width, height). The values x_center and y_center represent the center point of the bounding box, and width and height represent its size. For example, suppose "x_center, y_center, width, height = 125, 105, 150, 150". Here, the bounding box is centered at (125, 105) with both width and height equal to 150. To convert this into corner coordinates, you can calculate:
+"x_min = x_center - width // 2",
+"y_min = y_center - height // 2",
+"x_max = x_center + width // 2",
+"y_max = y_center + height // 2".
+After conversion, you can again use "cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)" to draw the rectangle.
+
+Different algorithms prefer different formats. Older methods often used the corner format, while most modern object detection algorithms (like YOLO) use the center format. But in both cases, you always need four parameters to represent a bounding box: either (x_min, y_min, x_max, y_max) or (x_center, y_center, width, height).
+
+So in summary, bounding boxes are the backbone of object detection tasks. Whether you are using corner format or center format, both provide the required rectangular region around the detected object. The choice of format usually depends on the algorithm, but the concept remains the same: define the region that tightly encloses the object.
+
+**D) Getting started with YOLO**
+
+Hello everyone, welcome to the lecture of Getting Started with YOLO VLSI. In this lecture, we will implement YOLO for object detection using pre-trained models. At this stage, we will not perform custom training, only inferencing, so GPU is not required — we can run everything on CPU. Later, in the next lecture, we will cover custom training.
+
+The first step is to install the Ultralytics package. This can be done with "pip install ultralytics". Once installed, we can import YOLO from Ultralytics using "from ultralytics import YOLO" to verify everything works correctly.
+
+YOLOv11 is the latest release by Ultralytics, offering real-time detection with high speed and efficiency. According to the documentation, it supports multiple tasks such as detection, segmentation, classification, pose estimation, oriented bounding boxes (OBB), and more. Since our focus is on object detection, we will use the detection pipeline.
+
+Ultralytics provides different model sizes such as Nano (n), Small (s), Medium (m), Large (l), and Extra-Large (x). The smaller models are faster but less accurate, while the larger ones are slower but more accurate. For example, the nano model has around 2M parameters and lower accuracy, while the extra-large (X) model has more than 50M parameters with the highest accuracy.
+
+To run inference with YOLO from the command line, the syntax is:
+"yolo predict model=yolov11n.pt source='image.jpg'".
+Here, predict specifies the task, model specifies the pre-trained model (like yolov11n.pt for nano), and source is the input file (an image or video). YOLO automatically downloads the model weights if not already available locally.
+
+To visualize predictions in Python, we can write a small function using OpenCV:
+"def show_image(path): import cv2; img = cv2.imread(path); cv2.imshow('Prediction', img); cv2.waitKey(0); cv2.destroyAllWindows()".
+After running predictions, we pass the output image path to show_image to display bounding boxes.
+
+Let us start testing different models. With the nano model, using "yolo predict model=yolov11n.pt source='people.jpg'", YOLO detects some persons, but misses others because of its limited capacity. Next, with the small model, "yolo predict model=yolov11s.pt source='people.jpg'", we see more accurate predictions, including umbrellas and chairs. Moving on to the medium model, "yolo predict model=yolov11m.pt source='people.jpg'", detection improves further — new objects like potted plants appear, which were missed by smaller models.
+
+Testing with the large model, "yolo predict model=yolov11l.pt source='people.jpg'", we notice better accuracy and more consistent bounding boxes. Finally, using the extra-large model, "yolo predict model=yolov11x.pt source='people.jpg'", we achieve the best detections overall, identifying more objects correctly. However, even this model sometimes fails, especially in cases of heavy overlapping objects, where YOLO struggles compared to two-stage detectors like Faster R-CNN.
+
+It is important to note that while larger models perform better in terms of accuracy, they also require more resources. In practice, the choice of model depends on the trade-off between speed and accuracy.
+
+In this lecture, we focused only on inferencing with pre-trained YOLO models using different variants (n, s, m, l, x). In the next lecture, we will explore custom training with our own dataset. Meanwhile, you can refer to the official Ultralytics YOLO documentation to learn about other tasks like segmentation and pose detection.
+
+We will later add a separate module dedicated to data annotation where we will go deeper into building production-grade datasets using these tools. For now, you should have a clear understanding of the basics of object detection: the difference from image classification, the role of bounding boxes, the input and output formats, and how annotation files are created.
+
+In the next lecture, we will discuss bounding box formats in detail. See you there.
+
+**E) Getting started with Detectron2**
+
+Hello everyone, welcome to the video of Detectron2 Getting Started. In the previous lecture, we explored YOLOv11 Getting Started, and now we will move into Detectron2. The approach here will be bottom-to-top, meaning we will first dive into the practical part and later cover the theoretical details.
+
+Detectron2 is developed by Facebook AI Research (FAIR) and is the next-generation library that provides state-of-the-art detection and segmentation algorithms. Our focus for now will be on detection, but later we will also explore segmentation. Detectron2 is the successor of the original Detectron, and this version provides faster training, better modularity, and easier customization.
+
+We begin by working with the official Google Colab tutorial. Running Detectron2 in Colab is straightforward because Linux systems are well-supported, whereas Windows requires workarounds. So, the first step is to install Detectron2. In Colab, this is done using a long shell command which includes cloning the GitHub repository and running setup: "!pip install pyyaml==5.1 && git clone https://github.com/facebookresearch/detectron2 detectron2_repo && pip install -e detectron2_repo". Once the installation is complete, we verify it by importing the library: "import detectron2". If no errors occur, it means the setup is successful. In my case, the current version was 0.6.
+
+After installation, we set up the logger provided by Detectron2. This is done with "from detectron2.utils.logger import setup_logger; setup_logger()". We also import other important libraries such as "import numpy as np", "import cv2", "import os", and "import json". Since we are working in Colab, we can visualize results easily later using OpenCV.
+
+Detectron2 provides a rich Model Zoo, which is a collection of pre-trained models. These include ResNet-50, ResNet-101, and even deeper architectures, often combined with detection heads like Faster R-CNN or RetinaNet. Each model in the zoo has a configuration file (.yaml) and pre-trained weights (.pkl). For example, if we want to use Faster R-CNN with ResNet-50 backbone trained on COCO, we can get its config path and weight file directly from the model zoo.
+
+In Detectron2, some of the most important utilities include the DefaultPredictor (used for inference), DefaultTrainer (used for training), get_cfg (for loading and customizing configurations), and the Visualizer (for displaying results). Additionally, the DatasetCatalog and MetadataCatalog handle dataset registration and metadata for annotations.
+
+Let us now run a simple inference. First, we load a sample COCO image using "im = cv2.imread('./input.jpg')". Then, we configure the model. We create a configuration object with "from detectron2.config import get_cfg; cfg = get_cfg()" and merge it with the model config file: "cfg.merge_from_file('detectron2_repo/configs/COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml')". Next, we set the weights with "cfg.MODEL.WEIGHTS = 'detectron2://COCO-Detection/faster_rcnn_R_50_FPN_3x/137849458/model_final_280758.pkl'". We also define a detection threshold, e.g., "cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5".
+
+Once the config is ready, we create the predictor: "from detectron2.engine import DefaultPredictor; predictor = DefaultPredictor(cfg)". Running inference is simple: "outputs = predictor(im)". The outputs dictionary contains "instances.pred_classes" for the detected classes and "instances.pred_boxes" for bounding boxes. For example, "print(outputs['instances'].pred_classes)" gives the detected class IDs, while "print(outputs['instances'].pred_boxes)" shows the coordinates of each bounding box.
+
+To visualize results, we use the Visualizer: "from detectron2.utils.visualizer import Visualizer; from detectron2.data import MetadataCatalog; v = Visualizer(im[:, :, ::-1], MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2); out = v.draw_instance_predictions(outputs['instances'].to('cpu')); cv2.imshow('Prediction', out.get_image()[:, :, ::-1]); cv2.waitKey(0)". This displays the image with bounding boxes and labels overlaid.
+
+Detectron2 also supports custom training. For that, we need to register our dataset with "DatasetCatalog.register" and "MetadataCatalog.get". After dataset registration, we can use the DefaultTrainer to train models on our custom dataset. However, in this lecture, we are only focusing on pre-trained models for detection, while segmentation and custom training will be covered later.
+
+Detectron2 also allows working with videos. By reading frames using OpenCV’s "cv2.VideoCapture" and passing each frame through the predictor, we can apply real-time detection or segmentation. For example, running detection on a YouTube video is possible by first downloading the video and then looping through frames.
+
+So, in summary, in this lecture we have seen how to install Detectron2 in Colab, import utilities, use pre-trained models from the model zoo, configure them, run inference on an image, and visualize the results. We did not go into segmentation or custom training yet; those will be explored in future lectures. The main idea for today was to get started with pre-trained models and understand how predictions are performed using Detectron2.
