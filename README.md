@@ -174,6 +174,20 @@ pip install ipykernel
 
 **E) Getting started with Detectron2**
 
+**F) Object Detection Architectures**
+
+**G) RCNN**
+
+**H) FAST RCNN**
+
+**I) FASTER RCNN**
+
+**J) FASTER RCNN with Pytorch Implementation**
+
+**K) Custom Object Detection with YOLOv11**
+
+**L) Custom Object Detection with Detectron2**
+
 ### (I) Computer Vision (Open CV With Python)
 
 ### **A) Reading and Writing Images:**
@@ -4189,3 +4203,258 @@ Detectron2 also supports custom training. For that, we need to register our data
 Detectron2 also allows working with videos. By reading frames using OpenCV’s "cv2.VideoCapture" and passing each frame through the predictor, we can apply real-time detection or segmentation. For example, running detection on a YouTube video is possible by first downloading the video and then looping through frames.
 
 So, in summary, in this lecture we have seen how to install Detectron2 in Colab, import utilities, use pre-trained models from the model zoo, configure them, run inference on an image, and visualize the results. We did not go into segmentation or custom training yet; those will be explored in future lectures. The main idea for today was to get started with pre-trained models and understand how predictions are performed using Detectron2.
+
+**F) Object Detection Architectures**
+
+Hello everyone, and welcome to the lecture on Object Detection Architectures. In this video, we will be looking into the different types of architectures that exist and how they are categorized. As we know, the main idea of object detection is to identify and localize objects within an image. These objects can be anything—a person, an animal, or any other object. The task involves not only identifying what the object is but also determining where it is located in the image, usually represented with bounding boxes. Over the years, multiple architectures have been developed that continuously improve accuracy, speed, and robustness. Broadly, these architectures are categorized into three main families: two-stage object detectors, one-stage object detectors, and transformer-based detectors. In this course, we will primarily focus on two-stage and one-stage detectors, and later on, we will add modules to cover transformer-based architectures as well.
+
+In an object detection task, there are two key components: classification and localization. Classification is about identifying what object is present in the image, while localization determines where the object is, typically through bounding boxes. These two processes happen in parallel. Let us now begin with the first family of architectures, the two-stage detectors, which are region proposal-based architectures.
+
+The earliest in this family is R-CNN, introduced in 2014 by Girshick. R-CNN used region proposals generated through classical computer vision approaches such as selective search, rather than relying fully on deep learning. Multiple regions in the image are selected through selective search, which are then wrapped and passed through a CNN to perform classification and localization. While groundbreaking for its time, this approach was slow.
+
+The next improvement was Fast R-CNN, developed in 2015 by the same author, Girshick. Fast R-CNN addressed the inefficiencies of R-CNN and introduced the concept of ROI (Region of Interest) pooling. ROI pooling allowed feature extraction from shared convolutional feature maps, making the process faster and more efficient. However, Fast R-CNN still relied on selective search for region proposals, which remained a bottleneck.
+
+To overcome this, Faster R-CNN was introduced in 2015. This architecture replaced selective search with a Region Proposal Network (RPN), which generated proposals using deep learning itself. This significantly improved efficiency and speed over Fast R-CNN, though it still was not suitable for real-time inference due to relatively slow speeds.
+
+Building further on this, Mask R-CNN was introduced in 2017. This extended Faster R-CNN by adding a third branch for segmentation, alongside classification and localization. With Mask R-CNN, every pixel of an object could be classified, making it highly useful for instance segmentation tasks. Thus, while two-stage detectors are generally slower and not real-time, they tend to provide higher accuracy than one-stage detectors.
+
+Moving on to one-stage detectors, the first architecture that stands out is YOLO (You Only Look Once), first introduced in 2016. Unlike two-stage detectors, YOLO eliminated the region proposal stage and directly predicted bounding boxes along with class labels in a single step. This made YOLO much faster and more suited for real-time applications. Since then, YOLO has evolved through multiple versions, from YOLOv1 to the latest YOLOv12. The original paper was authored by Joseph Redmon.
+
+Another widely used one-stage detector was SSD (Single Shot Multibox Detector), introduced in 2016. SSD was particularly known for being fast and better at handling small objects compared to Faster R-CNN. However, it was less accurate than Faster R-CNN, which was one of its limitations.
+
+In 2017, RetinaNet was introduced, which combined the advantages of one-stage detection with the accuracy of two-stage detectors. It used a Feature Pyramid Network (FPN) and multi-scale detection to improve accuracy. RetinaNet offered high accuracy with real-time speed, balancing precision and recall better than YOLO and SSD. However, it was computationally more expensive compared to YOLO. While RetinaNet remains important, recent YOLO versions, such as YOLOv11 from Ultralytics, provide excellent results as well.
+
+The third family of architectures is transformer-based object detectors, which are relatively new. A key example is DETR (Detection Transformer), introduced in 2020 by the Facebook AI research group. DETR employed an encoder–decoder-based transformer architecture for object detection. Unlike earlier models, it eliminated the need for non-max suppression and predefined anchor boxes, performing end-to-end object detection directly. While this was a significant innovation, DETR is computationally very expensive and not suitable for real-time use.
+
+To address some of these issues, Deformable DETR was introduced in 2021. This architecture used deformable attention, allowing the model to focus only on relevant regions, making it more efficient than the original DETR. Following this, another architecture called DINO (DETR with Improved Noisy Optimization) was developed. DINO improved training convergence and detection accuracy, making transformer-based detection more practical.
+
+In summary, we have looked at the major families of object detection architectures: two-stage detectors like R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN; one-stage detectors like YOLO, SSD, and RetinaNet; and transformer-based detectors such as DETR, Deformable DETR, and DINO. Two-stage detectors are generally more accurate but slower, while one-stage detectors are faster and suitable for real-time tasks. Transformer-based approaches, though computationally heavy, are powerful in eliminating anchors and providing end-to-end detection. Together, these architectures trace the evolution of object detection from 2014 onwards, showing how the field has progressed toward balancing accuracy, speed, and efficiency. At the end of this lecture, I have also summarized the key points in a table that highlights each architecture’s type, speed, accuracy, and notable features, which will serve as a quick recap.
+
+**G) RCNN**
+
+Hello everyone, and welcome to the lecture on R-CNN. In this session, we will be taking a deep dive into R-CNN, its architecture, and how it works. I have also included the original research paper, and the image shown here is taken directly from it to help us understand the pipeline of R-CNN. Before getting into the details of R-CNN itself, let us briefly look at the techniques that existed prior to it.
+
+Before R-CNN, object detection was carried out using traditional classical computer vision methods. Some of the commonly used techniques were HOG (Histogram of Oriented Gradients), SIFT (Scale Invariant Feature Transform), and selective search. These methods did not involve deep learning and relied on handcrafted features. However, they suffered from a lack of accuracy and efficiency, which limited their effectiveness for complex object detection tasks.
+
+R-CNN introduced a major shift by bringing CNN-based deep learning into the object detection pipeline while still leveraging one classical CV method—selective search. As we know, object detection involves two main tasks: classification and localization. Classification identifies what the object is, while localization determines where the object is by predicting bounding box coordinates. Localization is essentially a regression task, so object detection combines both regression and classification. R-CNN tackled this by using CNNs for feature extraction and selective search for generating region proposals.
+
+The role of region proposal methods, such as selective search, is to generate candidate object locations, often referred to as potential regions where objects might exist. Selective search provides around 2000 such region proposals per image, each represented as a rectangular bounding box. These are only candidate regions, meaning some of them may contain objects while others may not. Once these proposals are generated, the second step involves passing them through a CNN for feature extraction.
+
+The CNN feature extraction is carried out using classification architectures like AlexNet or VGG, which were popular around 2014. Since CNNs require a fixed input size, all 2000 candidate regions are resized, for example to 224×224×3 when using VGG. After resizing, CNNs extract features from each region. For classification, these features are then passed to a Support Vector Machine (SVM), which was used in R-CNN as the classifier instead of a fully connected layer.
+
+The final step in the pipeline is bounding box regression, which fine-tunes the predicted bounding box coordinates. This ensures that the bounding boxes align more accurately with the detected objects. To summarize the pipeline: first, selective search generates around 2000 region proposals; second, each proposal is resized and passed through a CNN (such as VGG or AlexNet) for feature extraction; third, the extracted features are classified using an SVM; and finally, bounding box regression refines the localization results. Together, these steps produce both classification and localization outputs.
+
+Although R-CNN was revolutionary for its time, it had several limitations. The first major drawback was slow inference. Processing 2000 regions per image with CNNs is computationally expensive, leading to very high prediction times. In fact, inference took around 50 seconds per image on a GPU, and nearly two minutes on a CPU, making it unsuitable for real-time applications.
+
+The second limitation was the storage overhead. Since features were extracted separately for each of the 2000 regions, a very large amount of storage was required to save these features. The third problem was that R-CNN was not end-to-end trainable. Its three components—region proposal, CNN-based feature extraction, and SVM-based classification—were trained separately rather than as a single unified model. This lack of integration made the pipeline inefficient.
+
+Because of these limitations, R-CNN quickly became outdated, and new architectures were introduced to improve upon it. Fast R-CNN, introduced shortly after, addressed many of these inefficiencies, followed by Faster R-CNN, which replaced selective search with a trainable Region Proposal Network. While R-CNN laid the foundation for deep learning-based object detection, it is now considered deprecated and is not used in practice. However, studying it is important to understand the historical evolution of object detection architectures.
+
+In upcoming lectures, we will discuss Fast R-CNN and Faster R-CNN in detail, followed by YOLO-based architectures. Faster R-CNN, for example, can be directly implemented using frameworks such as Detectron developed by Facebook. While we won’t be implementing R-CNN in practice due to its inefficiency, its theoretical contribution is crucial for understanding how the field progressed.
+
+That concludes this lecture on R-CNN. In the next session, we will move on to Fast R-CNN and see how it improved upon the original architecture.
+
+**H) FAST RCNN**
+
+Hello everyone, and welcome to the lecture on Fast R-CNN. In this session, we will go through the architecture of Fast R-CNN, understand how it differs from R-CNN, and examine the improvements it brings on top of the earlier approach.
+
+Fast R-CNN is designed to detect objects and classify them while simultaneously refining the bounding box locations. In other words, it handles both classification and localization—where classification identifies what the object is, and localization predicts the bounding box coordinates. Importantly, both of these tasks are carried out simultaneously in Fast R-CNN, unlike in R-CNN where they were processed in a more fragmented manner.
+
+One of the key innovations of Fast R-CNN is the use of a shared feature map. Unlike R-CNN, which performs separate forward passes for each of the approximately 2000 region proposals, Fast R-CNN processes the image only once through a CNN to generate a feature map. This feature map is then shared across all region proposals, significantly reducing redundancy and speeding up the overall process.
+
+Let us now walk through the pipeline. The first step is input image processing. Unlike R-CNN, where the image was first passed through selective search and then through a CNN like VGG or AlexNet, Fast R-CNN introduces a more efficient setup. The input image is passed directly to a CNN to extract feature maps, while in parallel, region proposals are generated. This removes the inefficiency of processing each region separately, as was the case in R-CNN.
+
+For generating region proposals, Fast R-CNN still relies on traditional selective search. These region proposals indicate potential locations of objects within the image. Unlike R-CNN where selective search proposals were processed independently, here they are projected onto the CNN feature map, avoiding repetitive CNN computations.
+
+The next step in the pipeline is ROI pooling, or Region of Interest pooling. ROI pooling takes the feature map generated by the CNN along with the region proposals suggested by selective search. Each region of interest is mapped onto the feature map, and the pooling operation ensures that all proposed regions are converted into a fixed size. This standardization is essential before feeding them into the fully connected layers for classification and regression.
+
+Once ROI pooling is complete, the pooled features are passed to fully connected layers. From this stage onward, the network simultaneously performs two tasks: classification, which predicts the class label of the object using a softmax classifier, and bounding box regression, which refines the predicted coordinates of the bounding box. It is important to note that unlike R-CNN, which used an SVM for classification, Fast R-CNN integrates softmax directly, making the system more cohesive and efficient.
+
+Fast R-CNN introduced several advantages over R-CNN. First, it achieved significant speed improvements by eliminating redundant CNN passes. Instead of processing 2000 region proposals separately, a single forward pass of the CNN is sufficient, which greatly reduces computational overhead. Second, Fast R-CNN is end-to-end trainable. The entire pipeline, including feature extraction, ROI pooling, classification, and bounding box regression, can be trained together in one shot. Third, it provides better accuracy compared to R-CNN and even earlier models like OverFeat. Finally, it is more memory efficient, since features are extracted only once for the image rather than for every region proposal.
+
+However, Fast R-CNN is not without limitations. The first major drawback is that it still depends on selective search for region proposals, which is a hand-engineered classical computer vision method and not a learnable component. This reliance makes the system slower than desired. While the inference time was reduced from about 50 seconds per image in R-CNN to around 20–30 seconds on a GPU, it was still not fast enough for real-time applications. Another limitation is that there is no learning involved in the region proposal stage. Since selective search is fixed, the model cannot improve the quality of proposals during training. These issues would later be addressed by Faster R-CNN, which replaced selective search with a trainable Region Proposal Network.
+
+To summarize, Fast R-CNN represents a significant improvement over R-CNN by sharing feature maps across region proposals, introducing ROI pooling for fixed-size features, and enabling simultaneous classification and localization. It also allows end-to-end training and achieves better accuracy with greater efficiency. However, its dependency on selective search and relatively slow inference speed left room for further advancements.
+
+In practice, we will not be implementing Fast R-CNN directly, since Faster R-CNN and later architectures have largely replaced it. In the next lecture, we will move on to Faster R-CNN, which builds upon Fast R-CNN by removing the reliance on selective search and introducing region proposal learning using deep networks.
+
+**I) FASTER RCNN**
+
+Hello everyone, welcome to the lecture of Faster R-CNN. This is one of the architectures which we even use today. Unlike R-CNN and Fast R-CNN, which are not commonly used anymore, Faster R-CNN models are still widely adopted for object detection tasks. Let’s try to understand the architecture of Faster R-CNN and how it is different from R-CNN and Fast R-CNN.
+
+Faster R-CNN is an advanced object detection model that improves upon the previous architectures by introducing a Region Proposal Network, or RPN. Previously, for region proposals, both R-CNN and Fast R-CNN relied on selective search. That has now been replaced by a CNN-based deep learning network. This is one of the biggest improvements made and is the reason why Faster R-CNN is still widely used today. In fact, Faster R-CNN forms the basis for later extensions such as Mask R-CNN, which adds another head for segmentation. We will discuss that later, but for now, let’s focus on Faster R-CNN.
+
+Let’s go step by step through the pipeline. The first part of the architecture is the convolutional backbone. The job of this backbone is feature extraction. We start with the input image, which is directly passed through the CNN backbone, such as ResNet or VGG, to extract feature maps. These feature maps capture spatial information and act as the input for subsequent layers. From here, the extracted feature maps flow into two branches: one goes towards the Region Proposal Network, and the other carries forward to the rest of the detection pipeline.
+
+The second major component is the Region Proposal Network, or RPN. This is a fully convolutional network that has completely replaced selective search. The RPN scans the feature maps and generates region proposals. Its job is to predict whether a region contains an object or not and to refine the bounding box around that object. Instead of relying on external classical techniques like selective search, this is now handled by the RPN directly inside the neural network. The RPN uses anchor boxes to detect objects at multiple scales, which ensures that objects of different sizes and shapes can be detected.
+
+After the RPN generates region proposals, the next step is ROI pooling, or Region of Interest pooling. The ROI pooling layer resizes all region proposals into a fixed-size feature representation. This is important because different objects can be of different sizes, but the network needs to process them in a consistent manner. By mapping region proposals onto the feature maps and resizing them into a uniform fixed size, the ROI pooling layer allows the model to efficiently process objects of varying scales. For example, an object might be small, large, thin, or wide, and anchor boxes of different scales and aspect ratios ensure these variations are captured.
+
+Once ROI pooling is completed, the fixed-size features are passed to fully connected layers. From there, the pipeline splits into two branches. The first branch is the classification head, which predicts the object class such as dog, car, or person. The second branch is the regression head, which predicts the coordinates of the bounding box. Both these tasks—classification and regression—run in parallel, making Faster R-CNN efficient and accurate.
+
+Now, let’s look deeper into how the Region Proposal Network itself works. The RPN operates using a sliding window mechanism. A small sliding window, typically of size 3x3, is applied across the convolutional feature map. This window looks at nine pixels at a time and predicts region proposals. The information from the sliding window is passed to an intermediate 256-dimensional layer, which acts as a feature representation of the local region being analyzed. From this intermediate layer, the data is fed into two parallel branches within the RPN itself: a classification branch and a regression branch.
+
+The classification branch outputs 2k scores, where k is the number of anchors at each position. In the original Faster R-CNN paper, k is set to 9. These scores indicate whether a region contains an object (foreground) or is just background. The regression branch, on the other hand, outputs 4k coordinates, which are used to refine the bounding boxes and adjust the anchor boxes to fit the objects better.
+
+Anchor boxes are central to how the RPN works. You can think of anchor boxes as sliding windows associated with predefined scales and aspect ratios. In the Faster R-CNN paper, three different scales and three different aspect ratios were used, leading to nine anchors per position (hence k = 9). These anchor boxes allow the network to handle objects of different shapes and sizes. For example, one anchor may fit a large object, another a small one, another a wide object, and yet another a tall, thin object. By combining multiple scales and ratios, the RPN can effectively cover different object appearances within the image.
+
+Thus, the RPN generates region proposals using sliding windows, anchor boxes, classification, and regression. These proposals are then passed to the ROI pooling layer and eventually to the fully connected layers of the Faster R-CNN pipeline. It’s important to note that the RPN is essentially a smaller CNN inside the larger Faster R-CNN model. Within the RPN, there are classification and regression heads, and then on top of the overall Faster R-CNN, there are also classification and regression heads for the final detection.
+
+Now let’s summarize the advantages of Faster R-CNN. First, it offers high detection accuracy compared to earlier architectures. Second, it is end-to-end trainable, meaning the entire network, including the RPN, can be trained jointly. While it is possible to train the RPN separately, the architecture supports end-to-end learning. Third, the RPN has replaced selective search, eliminating the major bottleneck of earlier methods and making the pipeline much more efficient. Fourth, Faster R-CNN can handle multiple object scales and shapes thanks to anchor boxes.
+
+At the same time, Faster R-CNN does have some disadvantages. It is computationally expensive and requires high-end GPUs for practical use. This makes it less suitable for real-time applications, as inference times are still relatively high. Another limitation is that Faster R-CNN is sensitive to small objects. Small objects within images may not be detected well, leading to reduced performance in such cases.
+
+Despite these limitations, Faster R-CNN is still widely used in production today due to its accuracy and robustness. It has found applications in autonomous vehicles, medical image analysis, surveillance systems, and many more areas. If you want to dive deeper, I highly recommend reading the original Faster R-CNN research paper, as it is a great resource when starting your journey into object detection.
+
+So that concludes our lecture on Faster R-CNN. In the next lecture, we will move forward and discuss further improvements and extensions of this model. See you in the next one.
+
+**J) FASTER RCNN with Pytorch Implementation**
+
+Hello everyone, welcome to the lecture of Faster R-CNN implementation with PyTorch. In this session, we will not be training a model from scratch; instead, we will use a pre-trained model directly from PyTorch, specifically trained on the COCO dataset, and perform model inferencing. The model we will be using is Faster R-CNN with a ResNet-50 backbone and Feature Pyramid Network, also called ResNet50-FPN. This backbone has 50 layers and serves as the feature extractor. We will download this pre-trained model and use it for predictions.
+
+Let’s begin with the import section. First, we import the essential libraries: torch and torchvision. From torchvision.models.detection, we import Faster R-CNN and the weights, because we require both the architecture and the trained parameters. For visualization, we use OpenCV, so we import cv2. We also import numpy and matplotlib for numerical operations and plotting. To handle image loading, we import PIL, and finally, for image transformations, we import torchvision.transforms. The code looks like this:
+"import torch
+import torchvision
+from torchvision.models.detection import fasterrcnn_resnet50_fpn, FasterRCNN_ResNet50_FPN_Weights
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+import torchvision.transforms as T"
+
+Now, let us discuss how to download and load the model. First, we download the weights using the predefined PyTorch function. When we initialize the model with "weights = FasterRCNN_ResNet50_FPN_Weights.DEFAULT", the weights are automatically downloaded if not present locally. Then, we create the model using "model = fasterrcnn_resnet50_fpn(weights=weights, box_score_thresh=0.7)". Notice that we are setting the box score threshold to 0.7, meaning predictions below 70% confidence will be ignored. After this, we set the model to evaluation mode by writing "model.eval()", because we are only doing inference and not training. Finally, we also return the meta categories from the weights using "weights.meta['categories']", which will give us the class names from the COCO dataset. COCO has 90 classes plus one background class, so in total, 91 categories. These names will be useful when we visualize the detections with bounding boxes.
+
+Next, we define the image preprocessing step. This function takes an image path as input, reads the image using PIL, converts it into RGB, and then applies the transform to convert it into a tensor. For example:
+"def preprocess_image(image_path):
+image = Image.open(image_path).convert('RGB')
+transform = T.ToTensor()
+image_tensor = transform(image)
+return image, image_tensor"
+This function returns both the original image and the image tensor, so we can use them for inference and visualization.
+
+Now let us perform the model prediction. For this, we need both the model and the image tensor. Since we are only doing inference and not updating weights, we wrap the prediction in a "with torch.no_grad()" block. Inside this block, we pass the image tensor to the model:
+"with torch.no_grad():
+prediction = model([image_tensor])"
+The output of this prediction contains three components: bounding boxes, confidence scores, and class labels. For debugging, we can print the raw prediction using "print(prediction)", but in practice, we extract only the first prediction with "prediction[0]".
+
+Now we move on to visualization. For that, we define a function called visualize_detections. This function takes the original image, the prediction, and the category names. We first convert the image from RGB to BGR since OpenCV expects BGR format. Then we extract the three components of the prediction: boxes, labels, and scores. We create a copy of the image to draw on. For each detected object, we loop through its bounding box, label, and score. To assign colors, we can randomly generate values using "np.random.randint(0, 255, size=3)". For each bounding box, we draw a rectangle using "cv2.rectangle". Bounding boxes can be defined either as (xmin, ymin, xmax, ymax) or as (x, y, width, height); in our case, we follow the first format. After drawing the rectangle, we also display the class name and confidence score. For that, we use "cv2.putText" with the category name taken from the meta categories. For example:
+"cv2.putText(image, label_text, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)"
+This will display the object’s class name on top of the bounding box.
+
+Next, we structure everything inside a main function. Inside the main function, we first load the model and categories using the function we defined earlier. Then we preprocess the image, run the detection, and visualize the results. The detections are also counted using "len(prediction['boxes'])", which tells us how many objects were detected in the image. Finally, we plot the results using matplotlib and print out the bounding box coordinates, confidence scores, and labels for each detection.
+
+When we execute this, the first step takes some time because loading Faster R-CNN with ResNet-50 is heavy; it has 50 layers, so the model loading is not instant. Once it is loaded, we can see the results. For example, in the sample image with a person and horses, the raw output contains nine bounding boxes, each with coordinates, labels, and scores. However, the actual ground truth is that the image contains two persons and five horses, so the correct number of objects is seven. Because of the lower threshold of 0.7, we sometimes get duplicate detections, such as detecting the same person twice, one with a confidence of 78% and another with nearly 100%.
+
+To fix this, we can increase the threshold. Instead of 0.7, we change it to 0.9 in the model initialization by writing "model = fasterrcnn_resnet50_fpn(weights=weights, box_score_thresh=0.9)". When we run the detection again, the duplicate boxes disappear, and we get exactly seven detections: two persons and five horses, which matches the image correctly. This demonstrates how important it is to tune the threshold depending on the use case.
+
+Finally, remember that this implementation can be extended easily. Instead of a single image, we can run detections on multiple images by looping over a folder of images and calling the same functions. Faster R-CNN with PyTorch makes it easy to use pre-trained models for inference without training from scratch.
+
+So that concludes the lecture on Faster R-CNN implementation with PyTorch. Please try this out with different images, experiment with thresholds, and see how the detections change. I hope the process was clear and enjoyable for you. See you in the next lecture.
+
+**K) Custom Object Detection with YOLOv11**
+
+Welcome to the lecture on YOLO 11 Custom Training. In this session, we will walk through the complete process of training a YOLO 11 model on a custom dataset. We will begin by downloading a dataset, preparing it, and then training our model on top of it. After that, we will move on to validation, inferencing, and finally exporting the trained model into different formats so that we can achieve faster inference speeds depending on the hardware we are using. So let’s get started.
+
+The first step is to select a runtime. Since we will be working in Google Colab, we need to ensure that we have access to a GPU for faster training. In this case, I will be selecting a T4 GPU, which is perfectly fine for our task. I will also go with high RAM because I am using Colab Pro. Once the runtime is set, I will save the session and reconnect. It may take a little time to establish the connection, but once that is done, we can begin.
+
+Now the very first thing we need to do is install Ultralytics. This is the library that provides the YOLO 11 implementation. To install it, I will execute the installation command, and this process will take more than a minute because Ultralytics performs a number of checks and setups during installation. So let us wait for that to complete.
+
+While the installation is happening, let me quickly explain the significance of Ultralytics. Ultralytics provides ready-to-use implementations of YOLO, including YOLO 11. If you look at their official tutorials, you will see that they have explained why to choose Ultralytics, the key features available, and examples of training with single GPU, CPU, and even multi-GPU support. They even have specific support for Apple Silicon and MPS training, which is great for Mac users. In our case, however, we will stick to Google Colab and make use of the GPU provided here.
+
+Once the installation is complete, let’s verify our environment. In my case, I can see that I have 8 CPUs, 51 GB of RAM, and a Tesla T4 GPU, which looks good for our purpose. Now, let’s move on to downloading the dataset.
+
+I have already provided a link to the dataset, and when I click on it, it will take me to Roboflow Universe. Roboflow Universe is an excellent platform where you can find a massive collection of datasets — over 5 million datasets and more than 350 million images are available there. For this lecture, we will use the Rock Paper Scissors dataset, which was updated just a few days ago.
+
+Once inside the dataset page on Roboflow, I will navigate to the Images section, where I can view sample images. The good news is that this dataset is already annotated, which means bounding box annotations are available for rock, paper, and scissors. Since the dataset looks good, I will proceed with it.
+
+The next step is to fork the dataset. So I will click on Fork Dataset, which asks me to sign in. I will sign in using my Google account. After signing in, I can either fork the dataset into my own workspace or directly download it. In this case, I prefer downloading it. So I will go to the dataset section, click on Download Dataset, and select the format as YOLO v11. After choosing this format, I will download the dataset as a ZIP file to my computer. Once downloaded, the ZIP file, which is around 227 MB, will be saved.
+
+Now that the dataset is downloaded, the next task is to upload it to Google Drive. I have already done this by creating a folder called YOLO_datasets inside my Google Drive, uploading the dataset ZIP file there, and renaming it to dataset.zip. To access this dataset in Colab, we first need to mount our Google Drive. In Colab, you can click on the Drive icon, which will prompt for authorization, and once completed, you will have access to your Google Drive files inside the notebook.
+
+After mounting, I will set my project directory to YOLO_datasets and then unzip the dataset. Unzipping might take a little time depending on the dataset size, but once it is complete, we will see folders like train, test, and some other files such as README and most importantly, the data.yaml file. This YAML file is crucial because it defines paths for training, validation, and test sets along with the number of classes and their names.
+
+Let’s open the data.yaml file. Inside it, we can see entries for train, validation, and test paths. These are currently given as relative paths, so I will update them to absolute paths pointing directly to the correct folders inside my Google Drive. For example, I will modify the train path to .../train/images, the val path to .../valid/images, and the test path to .../test/images. Also, the number of classes (nc) is set to 3, corresponding to rock, paper, and scissors. Once updated, I will save the YAML file.
+
+Now we are ready to begin training. Ultralytics gives us two ways to train YOLO models: using the command line interface (CLI) or the Python API. Let’s start with the command line.
+
+To train, we use the following command: "!yolo task=detect mode=train model=yolov11m.pt data=/path/to/data.yaml epochs=25 imgsz=640"
+
+Here, task=detect specifies that we are doing object detection. mode=train means we are training. For the model, I am selecting the medium version (yolov11m.pt). The data path points to the YAML file we just updated. I am training for 25 epochs, and the image size is set to 640.
+
+When this command is executed, YOLO will first download the yolov11m.pt pre-trained weights and then start scanning the dataset. In my case, it detected 6,445 training images and 576 validation images. Training then begins, and by default YOLO uses TensorBoard for logging, though integration with CometML is also available. Training will take some time, especially since I am using 25 epochs. For me, the training took about 1.6 hours to complete.
+
+Once training is done, YOLO saves two important weights inside the runs directory: last.pt and best.pt. The last.pt corresponds to the last epoch, and best.pt corresponds to the epoch with the lowest validation loss. For my training, the model size was around 40 MB, and the validation metrics like mAP looked reasonably good, above 50%.
+
+Now let’s move to validation. While validation happens automatically during training, you can also run it manually using: "!yolo mode=val model=/path/to/best.pt data=/path/to/data.yaml"
+
+This evaluates the trained model on the validation dataset and prints out the results.
+
+Next, let’s perform inference. To test our model on an image, we can run: "!yolo mode=predict model=/path/to/best.pt source=/path/to/image.jpg"
+
+This will generate predictions and save the results inside the runs/detect/predict folder. For example, when I ran it on a test image, the model correctly predicted two rocks.
+
+Now, let’s discuss exporting the model. By default, YOLO saves the model as a .pt file, which is a PyTorch model. However, for deployment and faster inference, we often want to export to other formats. For CPU-based inference, ONNX and OpenVINO are recommended. For GPU-based inference, TensorRT provides significant speed improvements. Exporting is as simple as:
+
+!yolo export model=/path/to/best.pt format=onnx
+!yolo export model=/path/to/best.pt format=engine
+
+
+The first command exports the model to ONNX format, while the second exports to TensorRT. These commands will automatically install any missing dependencies, perform the export, and save the new model in the runs directory.
+
+Finally, let’s look at the Pythonic usage. Instead of running commands, you can use YOLO directly inside Python code. For example:
+
+from ultralytics import YOLO
+
+Load pre-trained model - "model = YOLO("yolov11n.pt")"
+
+Train on custom dataset - "model.train(data="/path/to/data.yaml", epochs=1)"
+
+Validate - "model.val()"
+
+Predict - "results = model("/path/to/image.jpg")"
+
+Here, I used the nano version (yolov11n.pt) just to demonstrate quick training. Even with one epoch, it started producing predictions. The predictions are returned in the results object, which you can inspect or visualize.
+
+So in summary, we have covered the entire pipeline of custom training YOLO 11: starting from installing Ultralytics, downloading a dataset from Roboflow, preparing the dataset, updating the YAML configuration, training the model, validating it, performing inference, exporting into multiple formats, and finally using the Python API for the same tasks.
+
+I hope this lecture has given you a complete end-to-end understanding of how to perform custom training with YOLO 11. Please try this process with different datasets, experiment with different model sizes (nano, small, medium, large), and share your results.
+
+Thank you everyone, and see you in the next lecture.
+
+**L) Custom Object Detection with Detectron2**
+
+Welcome to the lecture on Custom Dataset Training with Detectron2. In this session, we will build a custom object detector using Detectron2 on a dataset that we will download, prepare, and train on. We will also cover dataset registration, visualization, training, evaluation, and saving the model. So let’s get started.
+
+The first step is to connect our notebook with a runtime. Since we will be doing training, I will use a GPU runtime. Once the connection is established, we are ready to proceed. The very first requirement is to install Detectron2 inside our runtime. For that, I run the installation command "!pip install detectron2 -q". This may take a few seconds to complete. After installation, I verify the setup by importing Detectron2 with "import detectron2". The version being used here is 0.6, and both Torch and CUDA are available, which confirms that our environment is properly configured.
+
+Next, we import some of the basic utilities that will be required throughout this lecture. These include the logger, some common libraries, DefaultPredictor, and get_cfg. These are needed because we will be downloading the model, visualizing our results, and working with the custom dataset. In particular, MetadataCatalog and DatasetCatalog are crucial when dealing with dataset registration.
+
+Now, let’s look at the dataset. I have provided a dataset link that points to the hardhat workers dataset. If you open the link, you will see that the dataset contains classes like head, helmet, and person. Inside the dataset page, you can choose different versions, such as “head class only” or “all classes.” For this lecture, I will go with all classes. The dataset is available in COCO format, meaning it comes with a JSON annotation file. Since the dataset is already labeled, the annotations are ready for use.
+
+I downloaded the dataset as a ZIP file. To keep things organized, I created a folder called Detectron2_dataset inside my Google Drive, and I uploaded the dataset.zip file there. To access this dataset from Colab, the next step is to mount Google Drive. This is done with "from google.colab import drive; drive.mount('/content/drive')". Once mounted, I navigate to my dataset directory. Since the file is still compressed, I unzip it using "!unzip /content/drive/MyDrive/Detectron2_dataset/dataset.zip -d /content/drive/MyDrive/Detectron2_dataset/". This operation may take a little longer in Google Drive compared to a local machine, but after some seconds the dataset is extracted successfully.
+
+Once unzipped, the first important step is to register the dataset with Detectron2. For this, we use "from detectron2.data.datasets import register_coco_instances" and then register the training, validation, and test sets. For example, "register_coco_instances('exp_train', {}, '/path/to/train/_annotations.coco.json', '/path/to/train/images')" registers the training set, where exp_train is just an experiment name. Similarly, "register_coco_instances('exp_val', {}, '/path/to/valid/_annotations.coco.json', '/path/to/valid/images')" registers validation, and "register_coco_instances('exp_test', {}, '/path/to/test/_annotations.coco.json', '/path/to/test/images')" registers the test set. Here, the important arguments are the name, the path to the annotations JSON file, and the path to the corresponding images.
+
+To confirm the annotations, I quickly open one of the annotation files using a Linux command like "!cat /content/drive/MyDrive/Detectron2_dataset/train/_annotations.coco.json | head -n 20". This displays the contents of the JSON file. We can see fields such as image_id, category_id, and bounding box coordinates that define the labeling information. This reassures us that the dataset is properly annotated.
+
+With the dataset registered, we can also visualize some training images. Using "from detectron2.utils.visualizer import Visualizer", we can draw annotations on top of a few sample images. As expected, the visualizations show bounding boxes with labels such as “helmet,” “head,” and “person.” This confirms that our dataset contains these three main classes.
+
+Now we move on to training the model. Training in Detectron2 requires setting up a configuration. We first import "from detectron2.engine import DefaultTrainer" and create a configuration object with "from detectron2.config import get_cfg; cfg = get_cfg()". Then, we load a base model configuration. For this lecture, I am using the Faster R-CNN with ResNet-50 backbone, so I fetch the YAML file with "cfg.merge_from_file(model_zoo.get_config_file('COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml'))". This brings in the pre-defined settings of the Faster R-CNN model.
+
+Next, I point the configuration to my dataset: "cfg.DATASETS.TRAIN = ('exp_train',)", "cfg.DATASETS.TEST = ('exp_val',)". I also set the number of workers to 2 using "cfg.DATALOADER.NUM_WORKERS = 2". For training parameters, I initialize the weights with "cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url('COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml')". I then define the solver parameters: "cfg.SOLVER.BASE_LR = 0.0025", "cfg.SOLVER.MAX_ITER = 300", "cfg.SOLVER.IMS_PER_BATCH = 2", and "cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128". Since we have three classes, I set "cfg.MODEL.ROI_HEADS.NUM_CLASSES = 3". Finally, I specify an output directory with "cfg.OUTPUT_DIR = '/content/drive/MyDrive/Detectron2_dataset/output'".
+
+With the configuration ready, I create the trainer object: "trainer = DefaultTrainer(cfg)". To ensure we can resume training later, I use "trainer.resume_or_load(resume=True)". Finally, I start training with "trainer.train()". The training begins, and Detectron2 logs the progress after every 20 iterations. Initially, the loss was around 1.77, but as training progressed, I observed the loss dropping towards 0.5, which indicates that the model is learning correctly.
+
+Training for 300 iterations only took around two minutes in my environment. If I want to train longer, say 500 or 1000 iterations, I just update "cfg.SOLVER.MAX_ITER = 500" and re-run the training. Thanks to "resume=True", the training picks up from where it left off, instead of restarting from zero. This is very convenient.
+
+Once training is complete, the model is saved automatically in the output directory. Specifically, the trained weights are stored in "model_final.pth". This is the file we will use for evaluation and inference. The output directory also contains logs and event files.
+
+Now, let’s perform evaluation. For evaluation, I load the same configuration and run the evaluation on the test set. This is done using "evaluator = COCOEvaluator('exp_test', cfg, False, output_dir=cfg.OUTPUT_DIR)" followed by "val_loader = build_detection_test_loader(cfg, 'exp_test')" and "inference_on_dataset(trainer.model, val_loader, evaluator)". In my case, the test set contained around 700 images. The evaluation results showed that the dataset is slightly imbalanced, with far fewer instances of “person” compared to “head” and “helmet.” Because of this, the mAP for “person” was lower. However, for “head” I got around 58% mAP, and for “helmet” around 51%, which is quite good considering this dataset was directly downloaded and not curated by us.
+
+Next, let’s look at some predictions. Using "predictor = DefaultPredictor(cfg)", I can run inference on new images. For example, "outputs = predictor(cv2.imread('/path/to/test/image.jpg'))". The predictions contain bounding boxes and class labels. Visualizing these predictions shows that the model is indeed detecting helmets and heads correctly, with very few misses, although of course the performance can further improve with more training.
+
+At this point, we have a trained model file "model_final.pth" and the associated configuration file "config.yaml". Both are needed if you want to deploy or run inference outside Colab. You can download them from your Google Drive, use them in a web application, or even serve them through an API. In upcoming lectures, we will also look into building a web app using Detectron2 and comparing it with YOLO 11 deployment.
+
+So, to summarize, in this lecture we successfully trained a custom object detector using Detectron2. We started from dataset download, performed dataset registration, visualized the data, trained a Faster R-CNN model, evaluated it, saved the trained weights, and performed inference. With this, we have a complete end-to-end pipeline for custom dataset training in Detectron2.
+
+Thank you everyone for joining, and I will see you in the next lecture.
